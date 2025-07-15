@@ -6,13 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
  * Database configuration module for Stellr Academy
  * 
  * This module handles the PostgreSQL database connection configuration
- * using TypeORM. It provides:
- * 
- * - Async configuration loading from environment variables
- * - Database connection pooling
- * - Entity auto-loading
- * - Migration support
- * - Environment-specific configurations (dev/staging/prod)
+ * using TypeORM. For development without PostgreSQL, it can use SQLite.
  */
 @Module({
   imports: [
@@ -21,6 +15,22 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
         const isProduction = configService.get('NODE_ENV') === 'production';
+        
+        // Use SQLite for development if PostgreSQL is not available
+        const useSqlite = configService.get('NODE_ENV') === 'development' && 
+                         !configService.get('DB_HOST') || 
+                         configService.get('USE_SQLITE') === 'true';
+        
+        if (useSqlite) {
+          return {
+            type: 'sqlite',
+            database: ':memory:', // In-memory database for testing
+            entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+            synchronize: true, // Auto-create tables for SQLite
+            logging: ['error'],
+            autoLoadEntities: true,
+          };
+        }
         
         return {
           // Database type - PostgreSQL for robust data handling
@@ -75,8 +85,9 @@ export class DatabaseModule {
    * Logs the database configuration initialization
    */
   constructor(private configService: ConfigService) {
+    const dbType = this.configService.get('USE_SQLITE') === 'true' ? 'SQLite (in-memory)' : 'PostgreSQL';
     const dbHost = this.configService.get<string>('DB_HOST', 'localhost');
     const dbName = this.configService.get<string>('DB_NAME', 'stellr_academy');
-    console.log(`💾 Database configured - PostgreSQL at ${dbHost}/${dbName}`);
+    console.log(`💾 Database configured - ${dbType} ${dbType === 'PostgreSQL' ? `at ${dbHost}/${dbName}` : ''}`);
   }
 }
