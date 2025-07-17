@@ -87,7 +87,7 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
-    "moduleNameMapping": {
+    "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/$1",
       "^@auth/(.*)$": "<rootDir>/auth/$1",
       "^@user/(.*)$": "<rootDir>/user/$1",
