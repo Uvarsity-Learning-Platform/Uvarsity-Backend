@@ -38,6 +38,7 @@ export class ErrorHandlerService {
       
       if (typeof response === 'string') {
         message = response;
+        code = this.getErrorCodeFromStatus(status);
       } else if (typeof response === 'object' && response['message']) {
         message = response['message'];
         code = response['error'] || this.getErrorCodeFromStatus(status);

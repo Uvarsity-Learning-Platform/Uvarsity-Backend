@@ -3,6 +3,10 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
+import { ErrorHandlerService } from './common/services/error-handler.service';
+import { LoggerService } from './common/services/logger.service';
+import { ProcessMonitorService } from './common/services/process-monitor.service';
 
 /**
  * Bootstrap function to initialize and start the Stellr Academy Backend application
@@ -12,8 +16,19 @@ async function bootstrap() {
   // Create the NestJS application instance
   const app = await NestFactory.create(AppModule);
 
+  // Enable shutdown hooks to integrate with custom graceful shutdown handlers
+  app.enableShutdownHooks();
+
   // Get configuration service to access environment variables
   const configService = app.get(ConfigService);
+
+  // Get services for global exception filter
+  const errorHandler = app.get(ErrorHandlerService);
+  const logger = app.get(LoggerService);
+  const processMonitor = app.get(ProcessMonitorService);
+
+  // Set up global exception filter for robust error handling
+  app.useGlobalFilters(new GlobalExceptionFilter(errorHandler, logger));
 
   // Set global API prefix for all routes (e.g., /api/v1/...)
   const apiPrefix = configService.get<string>('API_PREFIX', 'api/v1');
@@ -69,15 +84,26 @@ async function bootstrap() {
     },
   });
 
+  // Register shutdown handlers for graceful shutdown
+  processMonitor.registerShutdownHandler(
+    'database-cleanup',
+    async () => {
+      logger.log('Cleaning up database connections...', 'Bootstrap');
+      await app.close();
+    },
+  );
+
   // Get the port from environment variables or default to 3000
   const port = configService.get<number>('PORT', 3000);
 
   // Start the application
   await app.listen(port);
 
-  console.log(`🚀 Stellr Academy Backend is running on port ${port}`);
-  console.log(`📖 API Documentation available at http://localhost:${port}/${apiPrefix}/docs`);
-  console.log(`🏥 Health check available at http://localhost:${port}/${apiPrefix}/health`);
+  logger.log(`🚀 Stellr Academy Backend is running on port ${port}`, 'Bootstrap');
+  logger.log(`📖 API Documentation available at http://localhost:${port}/${apiPrefix}/docs`, 'Bootstrap');
+  logger.log(`🏥 Health check available at http://localhost:${port}/${apiPrefix}/health`, 'Bootstrap');
+  logger.log(`🛡️ Global exception filter enabled for robust error handling`, 'Bootstrap');
+  logger.log(`🔄 Process monitoring enabled for graceful shutdown`, 'Bootstrap');
 }
 
 // Start the application and handle any errors
