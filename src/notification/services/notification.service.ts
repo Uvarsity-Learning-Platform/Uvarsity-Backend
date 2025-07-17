@@ -217,8 +217,6 @@ export class NotificationService {
         priority: options?.priority || 'normal',
         templateId: options?.templateId,
         variables: options?.variables,
-        clickAction: options?.clickAction,
-        icon: options?.icon,
       },
       deliveryInfo: {
         recipient: 'push_token', // Would be actual device token

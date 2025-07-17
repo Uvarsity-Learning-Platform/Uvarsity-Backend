@@ -1,4 +1,13 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { Notification } from './entities/notification.entity';
+import { NotificationTemplate } from './entities/notification-template.entity';
+import { User } from '../user/entities/user.entity';
+
+import { NotificationService } from './services/notification.service';
+
+import { CommonModule } from '../common/common.module';
 
 /**
  * Notification Module for Stellr Academy Backend
@@ -30,10 +39,23 @@ import { Module } from '@nestjs/common';
  * - Delivery tracking and analytics
  */
 @Module({
-  imports: [],
-  controllers: [],
-  providers: [],
-  exports: [],
+  imports: [
+    CommonModule,
+    TypeOrmModule.forFeature([
+      Notification,
+      NotificationTemplate,
+      User,
+    ]),
+  ],
+  controllers: [
+    // Controllers would be added here if needed
+  ],
+  providers: [
+    NotificationService,
+  ],
+  exports: [
+    NotificationService,
+  ],
 })
 export class NotificationModule {
   constructor() {
