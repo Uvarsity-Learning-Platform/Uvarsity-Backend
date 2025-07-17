@@ -89,8 +89,8 @@ export class CourseEnrollment {
    * Enrollment status
    */
   @Column({
-    type: 'enum',
-    enum: ['active', 'completed', 'dropped', 'suspended'],
+    type: 'varchar',
+    length: 20,
     default: 'active',
   })
   @Index()
@@ -100,8 +100,8 @@ export class CourseEnrollment {
    * Enrollment method/source
    */
   @Column({
-    type: 'enum',
-    enum: ['self', 'admin', 'bulk', 'invitation'],
+    type: 'varchar',
+    length: 20,
     default: 'self',
   })
   enrollmentMethod: 'self' | 'admin' | 'bulk' | 'invitation';
@@ -182,8 +182,8 @@ export class CourseEnrollment {
    * Payment status for paid courses
    */
   @Column({
-    type: 'enum',
-    enum: ['free', 'paid', 'pending', 'failed'],
+    type: 'varchar',
+    length: 20,
     default: 'free',
   })
   paymentStatus: 'free' | 'paid' | 'pending' | 'failed';

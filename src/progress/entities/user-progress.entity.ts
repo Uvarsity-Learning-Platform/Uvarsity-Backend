@@ -176,8 +176,12 @@ export class UserProgress {
    * Additional metadata as JSON
    */
   @Column({
-    type: 'jsonb',
-    default: {},
+    type: 'text',
+    default: '{}',
+    transformer: {
+      to: (value: any) => JSON.stringify(value || {}),
+      from: (value: string) => JSON.parse(value || '{}'),
+    },
   })
   metadata: {
     lastPosition?: number;
