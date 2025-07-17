@@ -283,6 +283,6 @@ export class ProcessMonitorService implements OnApplicationShutdown {
    */
   async onApplicationShutdown(signal?: string): Promise<void> {
     this.logger.log(`Application shutdown hook called with signal: ${signal}`, 'ProcessMonitorService');
-    // The actual shutdown handling is done by our process listeners
+    await this.handleShutdown(signal || 'ApplicationShutdown');
   }
 }
