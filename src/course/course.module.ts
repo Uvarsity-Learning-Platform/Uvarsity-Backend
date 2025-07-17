@@ -1,4 +1,18 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { Course } from './entities/course.entity';
+import { Lesson } from './entities/lesson.entity';
+import { CourseEnrollment } from './entities/course-enrollment.entity';
+import { User } from '../user/entities/user.entity';
+
+import { CourseService } from './services/course.service';
+import { LessonService } from './services/lesson.service';
+
+import { CourseController } from './controllers/course.controller';
+import { LessonController } from './controllers/lesson.controller';
+
+import { CommonModule } from '../common/common.module';
 
 /**
  * Course Module for Stellr Academy Backend
@@ -24,10 +38,27 @@ import { Module } from '@nestjs/common';
  * - Media content linking
  */
 @Module({
-  imports: [],
-  controllers: [],
-  providers: [],
-  exports: [],
+  imports: [
+    CommonModule,
+    TypeOrmModule.forFeature([
+      Course,
+      Lesson,
+      CourseEnrollment,
+      User,
+    ]),
+  ],
+  controllers: [
+    CourseController,
+    LessonController,
+  ],
+  providers: [
+    CourseService,
+    LessonService,
+  ],
+  exports: [
+    CourseService,
+    LessonService,
+  ],
 })
 export class CourseModule {
   constructor() {
