@@ -232,7 +232,7 @@ export class CertificateService {
       createdBy,
     });
 
-    const savedTemplate = await this.templateRepository.save(template);
+    const savedTemplate = await this.templateRepository.save(template) as unknown as CertificateTemplate;
     this.logger.log(`Certificate template created: ${savedTemplate.id}`, 'CertificateService');
 
     return savedTemplate;

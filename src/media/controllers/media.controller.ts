@@ -284,11 +284,11 @@ export class MediaController {
   })
   async searchMedia(
     @Query('q') query: string,
+    @Request() req?,
     @Query('type') type?: string,
     @Query('lessonId') lessonId?: string,
     @Query('limit') limit?: number,
     @Query('offset') offset?: number,
-    @Request() req,
   ) {
     const userId = req.user?.id;
     const media = await this.mediaService.searchMedia(query, {

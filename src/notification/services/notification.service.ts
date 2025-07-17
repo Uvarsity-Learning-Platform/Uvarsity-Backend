@@ -376,7 +376,7 @@ export class NotificationService {
       createdBy,
     });
 
-    const savedTemplate = await this.templateRepository.save(template);
+    const savedTemplate = await this.templateRepository.save(template) as unknown as NotificationTemplate;
     this.logger.log(`Notification template created: ${savedTemplate.id}`, 'NotificationService');
 
     return savedTemplate;

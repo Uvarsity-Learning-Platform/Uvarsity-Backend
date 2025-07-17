@@ -1,6 +1,7 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
@@ -12,6 +13,7 @@ import { NotificationModule } from './notification/notification.module';
 import { MediaModule } from './media/media.module';
 import { CommonModule } from './common/common.module';
 import { HealthController } from './common/controllers/health.controller';
+import { PerformanceMiddleware } from './common/middleware/performance.middleware';
 
 /**
  * Root application module for Stellr Academy Backend
@@ -38,6 +40,14 @@ import { HealthController } from './common/controllers/health.controller';
       cache: true,
     }),
 
+    // Rate limiting module - prevents abuse and ensures API stability
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000, // 1 minute
+        limit: 100, // 100 requests per minute per IP
+      },
+    ]),
+
     // Database connection module - handles PostgreSQL connection
     DatabaseModule,
 
@@ -62,7 +72,16 @@ import { HealthController } from './common/controllers/health.controller';
     // Global providers will be added here as needed
   ],
 })
-export class AppModule {
+export class AppModule implements NestModule {
+  /**
+   * Configure middleware
+   */
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(PerformanceMiddleware)
+      .forRoutes('*'); // Apply to all routes
+  }
+
   /**
    * Application module constructor
    * Logs successful initialization of the Stellr Academy Backend

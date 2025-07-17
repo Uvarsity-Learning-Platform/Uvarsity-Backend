@@ -57,7 +57,7 @@ export class QuizService {
       createdBy,
     });
 
-    const savedQuiz = await this.quizRepository.save(quiz);
+    const savedQuiz = await this.quizRepository.save(quiz) as unknown as Quiz;
     this.logger.log(`Quiz created successfully: ${savedQuiz.id}`, 'QuizService');
 
     return savedQuiz;
@@ -164,7 +164,7 @@ export class QuizService {
       order: questionCount + 1,
     });
 
-    const savedQuestion = await this.questionRepository.save(question);
+    const savedQuestion = await this.questionRepository.save(question) as unknown as Question;
     this.logger.log(`Question added to quiz: ${quizId}`, 'QuizService');
 
     return savedQuestion;

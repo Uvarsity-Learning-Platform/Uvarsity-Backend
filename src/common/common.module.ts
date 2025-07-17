@@ -1,10 +1,13 @@
 import { Module } from '@nestjs/common';
 import { HealthController } from './controllers/health.controller';
+import { PerformanceController } from './controllers/performance.controller';
 import { LoggerService } from './services/logger.service';
 import { ErrorHandlerService } from './services/error-handler.service';
 import { CircuitBreakerService } from './services/circuit-breaker.service';
 import { ProcessMonitorService } from './services/process-monitor.service';
+import { PerformanceMonitorService } from './services/performance-monitor.service';
 import { GlobalExceptionFilter } from './filters/global-exception.filter';
+import { PerformanceMiddleware } from './middleware/performance.middleware';
 
 /**
  * Common module for shared utilities and cross-cutting concerns
@@ -22,19 +25,24 @@ import { GlobalExceptionFilter } from './filters/global-exception.filter';
  */
 @Module({
   controllers: [
-    HealthController, // Health check endpoints for monitoring
+    HealthController,         // Health check endpoints for monitoring
+    PerformanceController,    // Performance metrics endpoints
   ],
   providers: [
-    LoggerService,           // Centralized logging service
-    ErrorHandlerService,     // Global error handling
-    CircuitBreakerService,   // Circuit breaker for resilience
-    ProcessMonitorService,   // Process monitoring and graceful shutdown
+    LoggerService,            // Centralized logging service
+    ErrorHandlerService,      // Global error handling
+    CircuitBreakerService,    // Circuit breaker for resilience
+    ProcessMonitorService,    // Process monitoring and graceful shutdown
+    PerformanceMonitorService, // Performance monitoring and metrics
+    PerformanceMiddleware,    // Performance tracking middleware
   ],
   exports: [
-    LoggerService,           // Make logger available to other modules
-    ErrorHandlerService,     // Make error handler available to other modules
-    CircuitBreakerService,   // Make circuit breaker available to other modules
-    ProcessMonitorService,   // Make process monitor available to other modules
+    LoggerService,            // Make logger available to other modules
+    ErrorHandlerService,      // Make error handler available to other modules
+    CircuitBreakerService,    // Make circuit breaker available to other modules
+    ProcessMonitorService,    // Make process monitor available to other modules
+    PerformanceMonitorService, // Make performance monitor available to other modules
+    PerformanceMiddleware,    // Make performance middleware available to other modules
   ],
 })
 export class CommonModule {
