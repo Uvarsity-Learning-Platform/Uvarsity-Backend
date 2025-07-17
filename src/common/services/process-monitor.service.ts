@@ -1,5 +1,6 @@
 import { Injectable, OnApplicationShutdown } from '@nestjs/common';
 import { LoggerService } from './logger.service';
+import * as os from 'os';
 
 /**
  * Process Health Interface
@@ -123,7 +124,7 @@ export class ProcessMonitorService implements OnApplicationShutdown {
     heap: { used: string; total: string };
   } {
     const memUsage = process.memoryUsage();
-    const totalMemory = require('os').totalmem();
+    const totalMemory = os.totalmem();
     const usedMemory = memUsage.rss;
 
     return {

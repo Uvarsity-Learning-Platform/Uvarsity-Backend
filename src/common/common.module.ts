@@ -29,14 +29,12 @@ import { GlobalExceptionFilter } from './filters/global-exception.filter';
     ErrorHandlerService,     // Global error handling
     CircuitBreakerService,   // Circuit breaker for resilience
     ProcessMonitorService,   // Process monitoring and graceful shutdown
-    GlobalExceptionFilter,   // Global exception filter
   ],
   exports: [
     LoggerService,           // Make logger available to other modules
     ErrorHandlerService,     // Make error handler available to other modules
     CircuitBreakerService,   // Make circuit breaker available to other modules
     ProcessMonitorService,   // Make process monitor available to other modules
-    GlobalExceptionFilter,   // Make exception filter available to other modules
   ],
 })
 export class CommonModule {

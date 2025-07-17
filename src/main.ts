@@ -16,6 +16,9 @@ async function bootstrap() {
   // Create the NestJS application instance
   const app = await NestFactory.create(AppModule);
 
+  // Enable shutdown hooks to integrate with custom graceful shutdown handlers
+  app.enableShutdownHooks();
+
   // Get configuration service to access environment variables
   const configService = app.get(ConfigService);
 
