@@ -1,4 +1,16 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { UserProgress } from './entities/user-progress.entity';
+import { User } from '../user/entities/user.entity';
+import { Lesson } from '../course/entities/lesson.entity';
+import { Course } from '../course/entities/course.entity';
+import { CourseEnrollment } from '../course/entities/course-enrollment.entity';
+
+import { ProgressService } from './services/progress.service';
+import { ProgressController } from './controllers/progress.controller';
+
+import { CommonModule } from '../common/common.module';
 
 /**
  * Progress Module for Stellr Academy Backend
@@ -24,10 +36,25 @@ import { Module } from '@nestjs/common';
  * - Motivational features
  */
 @Module({
-  imports: [],
-  controllers: [],
-  providers: [],
-  exports: [],
+  imports: [
+    CommonModule,
+    TypeOrmModule.forFeature([
+      UserProgress,
+      User,
+      Lesson,
+      Course,
+      CourseEnrollment,
+    ]),
+  ],
+  controllers: [
+    ProgressController,
+  ],
+  providers: [
+    ProgressService,
+  ],
+  exports: [
+    ProgressService,
+  ],
 })
 export class ProgressModule {
   constructor() {

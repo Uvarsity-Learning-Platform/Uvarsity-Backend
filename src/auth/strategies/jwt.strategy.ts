@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
+import { AuthService } from '../services/auth.service';
 
 /**
  * JWT Strategy for Passport Authentication
@@ -12,7 +13,10 @@ import { ConfigService } from '@nestjs/config';
  */
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private authService: AuthService,
+  ) {
     super({
       // Extract JWT from Authorization header as Bearer token
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -37,16 +41,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * @returns User data to attach to request object
    */
   async validate(payload: any) {
-    // In a full implementation, this would:
-    // 1. Validate the user still exists
-    // 2. Check if the user account is active
-    // 3. Verify any additional security requirements
-    // 4. Return user data to be attached to req.user
+    // Validate the user still exists and is active
+    const user = await this.authService.validateUser(payload.sub);
     
-    return {
-      userId: payload.sub,
-      email: payload.email,
-      roles: payload.roles || ['learner'],
-    };
+    if (!user) {
+      throw new UnauthorizedException('User not found or inactive');
+    }
+    
+    // Return user data to be attached to req.user
+    return user;
   }
 }
