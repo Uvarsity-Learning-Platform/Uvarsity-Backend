@@ -68,9 +68,35 @@ interface PrismaClientCourse {
   count: (args: any) => Promise<number>;
 }
 
+interface RefreshToken {
+  id: string;
+  tokenHash: string;
+  userId: string;
+  expiresAt: Date;
+  isRevoked: boolean;
+  revokedAt?: Date | null;
+  revocationReason?: string | null;
+  userAgent?: string | null;
+  ipAddress?: string | null;
+  deviceName?: string | null;
+  lastUsedAt?: Date | null;
+  createdAt: Date;
+}
+
+interface PrismaClientRefreshToken {
+  findUnique: (args: any) => Promise<RefreshToken | null>;
+  findMany: (args: any) => Promise<RefreshToken[]>;
+  create: (args: any) => Promise<RefreshToken>;
+  update: (args: any) => Promise<RefreshToken>;
+  updateMany: (args: any) => Promise<{ count: number }>;
+  deleteMany: (args: any) => Promise<{ count: number }>;
+  count: (args: any) => Promise<number>;
+}
+
 interface PrismaClientBase {
   user: PrismaClientUser;
   course: PrismaClientCourse;
+  refreshToken: PrismaClientRefreshToken;
   $connect: () => Promise<void>;
   $disconnect: () => Promise<void>;
 }
@@ -92,22 +118,33 @@ interface PrismaClientBase {
 export class PrismaService implements OnModuleInit {
   public user: PrismaClientUser;
   public course: PrismaClientCourse;
+  public refreshToken: PrismaClientRefreshToken;
 
   constructor() {
     // For now, we'll use a mock implementation
     this.user = {
       findUnique: async (args: any) => null,
       findMany: async (args: any) => [],
-      create: async (args: any) => args.data,
-      update: async (args: any) => args.data,
+      create: async (args: any) => ({ ...args.data, id: 'mock-id', createdAt: new Date(), updatedAt: new Date() }),
+      update: async (args: any) => ({ ...args.data, id: args.where.id, updatedAt: new Date() }),
       count: async (args: any) => 0,
     };
 
     this.course = {
       findUnique: async (args: any) => null,
       findMany: async (args: any) => [],
-      create: async (args: any) => args.data,
-      update: async (args: any) => args.data,
+      create: async (args: any) => ({ ...args.data, id: 'mock-id', createdAt: new Date(), updatedAt: new Date() }),
+      update: async (args: any) => ({ ...args.data, id: args.where.id, updatedAt: new Date() }),
+      count: async (args: any) => 0,
+    };
+
+    this.refreshToken = {
+      findUnique: async (args: any) => null,
+      findMany: async (args: any) => [],
+      create: async (args: any) => ({ ...args.data, id: 'mock-id', createdAt: new Date() }),
+      update: async (args: any) => ({ ...args.data, id: args.where.id }),
+      updateMany: async (args: any) => ({ count: 1 }),
+      deleteMany: async (args: any) => ({ count: 1 }),
       count: async (args: any) => 0,
     };
   }
