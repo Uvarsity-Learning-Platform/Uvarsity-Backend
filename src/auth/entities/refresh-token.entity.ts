@@ -48,7 +48,6 @@ export class RefreshToken {
    * Actual token is hashed before storage for security
    */
   @Column({ unique: true, length: 255 })
-  @Index()
   tokenHash: string;
 
   /**
@@ -64,7 +63,6 @@ export class RefreshToken {
    * Stored separately for database performance
    */
   @Column('uuid')
-  @Index()
   userId: string;
 
   /**
@@ -79,7 +77,6 @@ export class RefreshToken {
    * Revoked tokens cannot be used for new access tokens
    */
   @Column({ default: false })
-  @Index()
   isRevoked: boolean;
 
   /**

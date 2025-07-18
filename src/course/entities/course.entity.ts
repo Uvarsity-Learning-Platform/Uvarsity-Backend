@@ -91,15 +91,22 @@ export class Course {
   /**
    * Course tags for search and discovery
    */
-  @Column({ type: 'text', array: true, default: [] })
+  @Column({ 
+    type: 'text',
+    default: '[]',
+    transformer: {
+      to: (value: string[]) => JSON.stringify(value || []),
+      from: (value: string) => JSON.parse(value || '[]'),
+    },
+  })
   tags: string[];
 
   /**
    * Course difficulty level
    */
   @Column({
-    type: 'enum',
-    enum: ['beginner', 'intermediate', 'advanced'],
+    type: 'varchar',
+    length: 20,
     default: 'beginner',
   })
   level: 'beginner' | 'intermediate' | 'advanced';
@@ -138,8 +145,8 @@ export class Course {
    * Course publication status
    */
   @Column({
-    type: 'enum',
-    enum: ['draft', 'published', 'archived'],
+    type: 'varchar',
+    length: 20,
     default: 'draft',
   })
   @Index()
@@ -149,11 +156,11 @@ export class Course {
    * Course pricing information
    */
   @Column({
-    type: 'jsonb',
-    default: {
-      type: 'free',
-      price: 0,
-      currency: 'USD',
+    type: 'text',
+    default: '{"type":"free","price":0,"currency":"USD"}',
+    transformer: {
+      to: (value: any) => JSON.stringify(value || {}),
+      from: (value: string) => JSON.parse(value || '{}'),
     },
   })
   pricing: {
@@ -166,11 +173,11 @@ export class Course {
    * Course enrollment settings
    */
   @Column({
-    type: 'jsonb',
-    default: {
-      isOpen: true,
-      maxEnrollments: null,
-      enrollmentDeadline: null,
+    type: 'text',
+    default: '{"isOpen":true,"maxEnrollments":null,"enrollmentDeadline":null}',
+    transformer: {
+      to: (value: any) => JSON.stringify(value || {}),
+      from: (value: string) => JSON.parse(value || '{}'),
     },
   })
   enrollmentSettings: {
@@ -182,13 +189,27 @@ export class Course {
   /**
    * Course requirements and prerequisites
    */
-  @Column({ type: 'text', array: true, default: [] })
+  @Column({ 
+    type: 'text',
+    default: '[]',
+    transformer: {
+      to: (value: string[]) => JSON.stringify(value || []),
+      from: (value: string) => JSON.parse(value || '[]'),
+    },
+  })
   prerequisites: string[];
 
   /**
    * Learning objectives and outcomes
    */
-  @Column({ type: 'text', array: true, default: [] })
+  @Column({ 
+    type: 'text',
+    default: '[]',
+    transformer: {
+      to: (value: string[]) => JSON.stringify(value || []),
+      from: (value: string) => JSON.parse(value || '[]'),
+    },
+  })
   learningObjectives: string[];
 
   // === COURSE METRICS ===

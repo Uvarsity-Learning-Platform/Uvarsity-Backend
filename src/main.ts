@@ -1,12 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
+import { ThrottlerGuard } from '@nestjs/throttler';
+import { Reflector } from '@nestjs/core';
+import helmet from 'helmet';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { ErrorHandlerService } from './common/services/error-handler.service';
 import { LoggerService } from './common/services/logger.service';
 import { ProcessMonitorService } from './common/services/process-monitor.service';
+import { API_VERSIONING_CONFIG } from './common/config/versioning.config';
 
 /**
  * Bootstrap function to initialize and start the Stellr Academy Backend application
@@ -30,9 +34,29 @@ async function bootstrap() {
   // Set up global exception filter for robust error handling
   app.useGlobalFilters(new GlobalExceptionFilter(errorHandler, logger));
 
+  // Enable security headers with Helmet
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: [],
+      },
+    },
+    crossOriginEmbedderPolicy: false,
+  }));
+
   // Set global API prefix for all routes (e.g., /api/v1/...)
-  const apiPrefix = configService.get<string>('API_PREFIX', 'api/v1');
+  const apiPrefix = configService.get<string>('API_PREFIX', 'api');
   app.setGlobalPrefix(apiPrefix);
+
+  // Enable API versioning with URI-based versioning
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: '1',
+  });
 
   // Enable CORS (Cross-Origin Resource Sharing) for frontend communication
   app.enableCors({
@@ -78,7 +102,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup(`${apiPrefix}/docs`, app, document, {
+  SwaggerModule.setup(`${apiPrefix}/v1/docs`, app, document, {
     swaggerOptions: {
       persistAuthorization: true,
     },
@@ -100,10 +124,15 @@ async function bootstrap() {
   await app.listen(port);
 
   logger.log(`🚀 Stellr Academy Backend is running on port ${port}`, 'Bootstrap');
-  logger.log(`📖 API Documentation available at http://localhost:${port}/${apiPrefix}/docs`, 'Bootstrap');
-  logger.log(`🏥 Health check available at http://localhost:${port}/${apiPrefix}/health`, 'Bootstrap');
+  logger.log(`📖 API Documentation available at http://localhost:${port}/${apiPrefix}/v1/docs`, 'Bootstrap');
+  logger.log(`🏥 Health check available at http://localhost:${port}/${apiPrefix}/v1/health`, 'Bootstrap');
+  logger.log(`📊 Performance metrics available at http://localhost:${port}/${apiPrefix}/v1/performance/metrics`, 'Bootstrap');
   logger.log(`🛡️ Global exception filter enabled for robust error handling`, 'Bootstrap');
   logger.log(`🔄 Process monitoring enabled for graceful shutdown`, 'Bootstrap');
+  logger.log(`⚡ Rate limiting enabled (100 requests per minute)`, 'Bootstrap');
+  logger.log(`🔒 Security headers enabled with Helmet`, 'Bootstrap');
+  logger.log(`📈 Performance monitoring enabled`, 'Bootstrap');
+  logger.log(`🔢 API versioning enabled (versions: 1, 2)`, 'Bootstrap');
 }
 
 // Start the application and handle any errors

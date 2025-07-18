@@ -1,4 +1,16 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { Certificate } from './entities/certificate.entity';
+import { CertificateTemplate } from './entities/certificate-template.entity';
+import { User } from '../user/entities/user.entity';
+import { Course } from '../course/entities/course.entity';
+import { CourseEnrollment } from '../course/entities/course-enrollment.entity';
+
+import { CertificateService } from './services/certificate.service';
+import { CertificateController } from './controllers/certificate.controller';
+
+import { CommonModule } from '../common/common.module';
 
 /**
  * Certificate Module for Stellr Academy Backend
@@ -24,10 +36,25 @@ import { Module } from '@nestjs/common';
  * - Automated certificate issuance
  */
 @Module({
-  imports: [],
-  controllers: [],
-  providers: [],
-  exports: [],
+  imports: [
+    CommonModule,
+    TypeOrmModule.forFeature([
+      Certificate,
+      CertificateTemplate,
+      User,
+      Course,
+      CourseEnrollment,
+    ]),
+  ],
+  controllers: [
+    CertificateController,
+  ],
+  providers: [
+    CertificateService,
+  ],
+  exports: [
+    CertificateService,
+  ],
 })
 export class CertificateModule {
   constructor() {

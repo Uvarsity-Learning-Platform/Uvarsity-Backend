@@ -1,6 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Version } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { LoggerService } from '../services/logger.service';
+import { V1_ROUTES, V2_ROUTES } from '../config/versioning.config';
 
 /**
  * Health check controller for monitoring and uptime verification
@@ -24,6 +25,7 @@ export class HealthController {
    * @returns {object} Basic health status information
    */
   @Get()
+  @Version(V1_ROUTES.version)
   @ApiOperation({
     summary: 'Basic health check',
     description: 'Returns the basic health status of the application',

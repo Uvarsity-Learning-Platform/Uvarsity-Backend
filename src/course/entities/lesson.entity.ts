@@ -74,8 +74,8 @@ export class Lesson {
    * Lesson content type
    */
   @Column({
-    type: 'enum',
-    enum: ['video', 'text', 'interactive', 'quiz', 'assignment'],
+    type: 'varchar',
+    length: 20,
     default: 'text',
   })
   contentType: 'video' | 'text' | 'interactive' | 'quiz' | 'assignment';
@@ -97,8 +97,8 @@ export class Lesson {
    * Lesson difficulty level
    */
   @Column({
-    type: 'enum',
-    enum: ['beginner', 'intermediate', 'advanced'],
+    type: 'varchar',
+    length: 20,
     default: 'beginner',
   })
   level: 'beginner' | 'intermediate' | 'advanced';
@@ -121,8 +121,12 @@ export class Lesson {
    * Additional resources and materials
    */
   @Column({
-    type: 'jsonb',
-    default: [],
+    type: 'text',
+    default: '[]',
+    transformer: {
+      to: (value: any) => JSON.stringify(value || []),
+      from: (value: string) => JSON.parse(value || '[]'),
+    },
   })
   resources: {
     type: 'pdf' | 'link' | 'document' | 'exercise';
@@ -134,13 +138,27 @@ export class Lesson {
   /**
    * Learning objectives for this lesson
    */
-  @Column({ type: 'text', array: true, default: [] })
+  @Column({ 
+    type: 'text',
+    default: '[]',
+    transformer: {
+      to: (value: string[]) => JSON.stringify(value || []),
+      from: (value: string) => JSON.parse(value || '[]'),
+    },
+  })
   learningObjectives: string[];
 
   /**
    * Key concepts covered in this lesson
    */
-  @Column({ type: 'text', array: true, default: [] })
+  @Column({ 
+    type: 'text',
+    default: '[]',
+    transformer: {
+      to: (value: string[]) => JSON.stringify(value || []),
+      from: (value: string) => JSON.parse(value || '[]'),
+    },
+  })
   keyConcepts: string[];
 
   // === LESSON MANAGEMENT ===
@@ -149,8 +167,8 @@ export class Lesson {
    * Lesson publication status
    */
   @Column({
-    type: 'enum',
-    enum: ['draft', 'published', 'archived'],
+    type: 'varchar',
+    length: 20,
     default: 'draft',
   })
   @Index()
@@ -160,11 +178,11 @@ export class Lesson {
    * Lesson access settings
    */
   @Column({
-    type: 'jsonb',
-    default: {
-      isPreview: false,
-      requiresEnrollment: true,
-      prerequisiteCompleted: false,
+    type: 'text',
+    default: '{"isPreview":false,"requiresEnrollment":true,"prerequisiteCompleted":false}',
+    transformer: {
+      to: (value: any) => JSON.stringify(value || {}),
+      from: (value: string) => JSON.parse(value || '{}'),
     },
   })
   accessSettings: {
@@ -176,7 +194,14 @@ export class Lesson {
   /**
    * Lesson prerequisite requirements
    */
-  @Column({ type: 'text', array: true, default: [] })
+  @Column({ 
+    type: 'text',
+    default: '[]',
+    transformer: {
+      to: (value: string[]) => JSON.stringify(value || []),
+      from: (value: string) => JSON.parse(value || '[]'),
+    },
+  })
   prerequisites: string[];
 
   // === LESSON METRICS ===

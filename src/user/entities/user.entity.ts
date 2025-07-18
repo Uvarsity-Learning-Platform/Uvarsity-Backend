@@ -58,7 +58,6 @@ export class User {
    * Must be unique across the platform
    */
   @Column({ unique: true, length: 255 })
-  @Index()
   email: string;
 
   /**
@@ -112,8 +111,8 @@ export class User {
    * - deleted: Soft-deleted account (GDPR compliance)
    */
   @Column({
-    type: 'enum',
-    enum: ['active', 'suspended', 'deleted'],
+    type: 'varchar',
+    length: 20,
     default: 'active',
   })
   status: 'active' | 'suspended' | 'deleted';
@@ -155,23 +154,11 @@ export class User {
    * Controls email, SMS, and push notification settings
    */
   @Column({
-    type: 'jsonb',
-    default: {
-      email: {
-        courseUpdates: true,
-        reminderNotifications: true,
-        achievementAlerts: true,
-        weeklyProgress: true,
-      },
-      sms: {
-        reminderNotifications: false,
-        urgentUpdates: false,
-      },
-      push: {
-        lessonReminders: true,
-        quizAvailable: true,
-        achievementUnlocked: true,
-      },
+    type: 'text',
+    default: '{"email":{"courseUpdates":true,"reminderNotifications":true,"achievementAlerts":true,"weeklyProgress":true},"sms":{"reminderNotifications":false,"urgentUpdates":false},"push":{"lessonReminders":true,"quizAvailable":true,"achievementUnlocked":true}}',
+    transformer: {
+      to: (value: any) => JSON.stringify(value),
+      from: (value: string) => JSON.parse(value),
     },
   })
   notificationPreferences: {

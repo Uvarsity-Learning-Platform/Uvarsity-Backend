@@ -1,4 +1,15 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { MulterModule } from '@nestjs/platform-express';
+
+import { Media } from './entities/media.entity';
+import { User } from '../user/entities/user.entity';
+import { Lesson } from '../course/entities/lesson.entity';
+
+import { MediaService } from './services/media.service';
+import { MediaController } from './controllers/media.controller';
+
+import { CommonModule } from '../common/common.module';
 
 /**
  * Media Module for Stellr Academy Backend
@@ -30,10 +41,28 @@ import { Module } from '@nestjs/common';
  * - File optimization and compression
  */
 @Module({
-  imports: [],
-  controllers: [],
-  providers: [],
-  exports: [],
+  imports: [
+    CommonModule,
+    TypeOrmModule.forFeature([
+      Media,
+      User,
+      Lesson,
+    ]),
+    MulterModule.register({
+      limits: {
+        fileSize: 100 * 1024 * 1024, // 100MB
+      },
+    }),
+  ],
+  controllers: [
+    MediaController,
+  ],
+  providers: [
+    MediaService,
+  ],
+  exports: [
+    MediaService,
+  ],
 })
 export class MediaModule {
   constructor() {
