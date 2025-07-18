@@ -257,7 +257,7 @@ export class PrismaQueryHelper {
         } else if ('lte' in value) {
           prismaWhere[key] = { lte: value.lte };
         } else if ('like' in value) {
-          prismaWhere[key] = { contains: value.like.replace(/%/g, '') };
+          prismaWhere[key] = { contains: String(value.like).replace(/%/g, '') };
         } else {
           prismaWhere[key] = value;
         }

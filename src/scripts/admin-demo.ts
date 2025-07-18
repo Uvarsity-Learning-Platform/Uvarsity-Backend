@@ -37,7 +37,7 @@ async function runAdminDemo() {
       });
       
       // Update to admin role
-      await adminUserService.updateUser(adminUser.user.id, {
+      await adminUserService.updateUser(adminUser.userId, {
         role: 'admin',
         isEmailVerified: true,
       });
@@ -58,7 +58,7 @@ async function runAdminDemo() {
       });
       
       // Update to instructor role
-      await adminUserService.updateUser(instructorUser.user.id, {
+      await adminUserService.updateUser(instructorUser.userId, {
         role: 'instructor',
         isEmailVerified: true,
       });
