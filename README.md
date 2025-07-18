@@ -140,6 +140,9 @@ EMAIL_PASSWORD=your-app-password
 ### Interactive API Explorer
 Visit http://localhost:3000/api/v1/docs for the complete interactive API documentation.
 
+### 🚀 Frontend Integration Guide
+For frontend developers, see [INTEGRATION.md](INTEGRATION.md) for a complete integration guide with code examples, authentication flows, and TypeScript interfaces.
+
 ### Core Endpoints
 
 #### Authentication
