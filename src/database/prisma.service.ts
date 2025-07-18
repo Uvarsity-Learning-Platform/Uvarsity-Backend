@@ -33,8 +33,44 @@ interface PrismaClientUser {
   count: (args: any) => Promise<number>;
 }
 
+interface Course {
+  id: string;
+  title: string;
+  description: string;
+  summary?: string | null;
+  thumbnailUrl?: string | null;
+  category: string;
+  tags: string;
+  level: string;
+  estimatedDuration?: number | null;
+  language: string;
+  instructorId: string;
+  status: string;
+  pricing: string;
+  enrollmentSettings: string;
+  prerequisites: string;
+  learningObjectives: string;
+  enrollmentCount: number;
+  averageRating: number;
+  ratingCount: number;
+  completionRate: number;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt?: Date | null;
+  archivedAt?: Date | null;
+}
+
+interface PrismaClientCourse {
+  findUnique: (args: any) => Promise<Course | null>;
+  findMany: (args: any) => Promise<Course[]>;
+  create: (args: any) => Promise<Course>;
+  update: (args: any) => Promise<Course>;
+  count: (args: any) => Promise<number>;
+}
+
 interface PrismaClientBase {
   user: PrismaClientUser;
+  course: PrismaClientCourse;
   $connect: () => Promise<void>;
   $disconnect: () => Promise<void>;
 }
@@ -55,10 +91,19 @@ interface PrismaClientBase {
 @Injectable()
 export class PrismaService implements OnModuleInit {
   public user: PrismaClientUser;
+  public course: PrismaClientCourse;
 
   constructor() {
     // For now, we'll use a mock implementation
     this.user = {
+      findUnique: async (args: any) => null,
+      findMany: async (args: any) => [],
+      create: async (args: any) => args.data,
+      update: async (args: any) => args.data,
+      count: async (args: any) => 0,
+    };
+
+    this.course = {
       findUnique: async (args: any) => null,
       findMany: async (args: any) => [],
       create: async (args: any) => args.data,

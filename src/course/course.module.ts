@@ -8,6 +8,7 @@ import { User } from '../user/entities/user.entity';
 
 import { CourseService } from './services/course.service';
 import { LessonService } from './services/lesson.service';
+import { CoursePrismaService } from './services/course-prisma.service';
 
 import { CourseController } from './controllers/course.controller';
 import { LessonController } from './controllers/lesson.controller';
@@ -54,14 +55,16 @@ import { CommonModule } from '../common/common.module';
   providers: [
     CourseService,
     LessonService,
+    CoursePrismaService,
   ],
   exports: [
     CourseService,
     LessonService,
+    CoursePrismaService,
   ],
 })
 export class CourseModule {
   constructor() {
-    console.log('📚 Course module initialized - Catalog and content management ready');
+    console.log('📚 Course module initialized - Catalog and content management ready (TypeORM + Prisma)');
   }
 }
