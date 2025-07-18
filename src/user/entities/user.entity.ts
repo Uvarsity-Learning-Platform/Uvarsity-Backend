@@ -117,6 +117,20 @@ export class User {
   })
   status: 'active' | 'suspended' | 'deleted';
 
+  /**
+   * User role for access control
+   * - user: Regular learner with course access
+   * - admin: Administrator with full platform access
+   * - instructor: Course creator and instructor
+   */
+  @Column({
+    type: 'varchar',
+    length: 20,
+    default: 'user',
+  })
+  @Index()
+  role: 'user' | 'admin' | 'instructor';
+
   // === OAUTH INTEGRATION ===
 
   /**
@@ -239,6 +253,30 @@ export class User {
    */
   isActive(): boolean {
     return this.status === 'active' && !this.deletedAt;
+  }
+
+  /**
+   * Check if the user is an administrator
+   * @returns true if user has admin role
+   */
+  isAdmin(): boolean {
+    return this.role === 'admin';
+  }
+
+  /**
+   * Check if the user is an instructor
+   * @returns true if user has instructor role
+   */
+  isInstructor(): boolean {
+    return this.role === 'instructor';
+  }
+
+  /**
+   * Check if the user has admin or instructor privileges
+   * @returns true if user can manage content
+   */
+  canManageContent(): boolean {
+    return this.isAdmin() || this.isInstructor();
   }
 
   /**

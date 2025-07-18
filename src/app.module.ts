@@ -12,6 +12,7 @@ import { CertificateModule } from './certificate/certificate.module';
 import { NotificationModule } from './notification/notification.module';
 import { MediaModule } from './media/media.module';
 import { CommonModule } from './common/common.module';
+import { AdminModule } from './admin/admin.module';
 import { HealthController } from './common/controllers/health.controller';
 import { PerformanceMiddleware } from './common/middleware/performance.middleware';
 
@@ -61,6 +62,7 @@ import { PerformanceMiddleware } from './common/middleware/performance.middlewar
     NotificationModule,// 🔔 Notifications and messaging
     MediaModule,       // 🎥 Media file management
     CommonModule,      // 🛠️ Shared utilities and common functionality
+    AdminModule,       // 🔧 Admin panel and management
   ],
   
   // Global controllers available at the app level
