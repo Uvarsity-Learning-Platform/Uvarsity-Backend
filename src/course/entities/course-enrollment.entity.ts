@@ -13,7 +13,7 @@ import { User } from '../../user/entities/user.entity';
 import { Course } from './course.entity';
 
 /**
- * Course Enrollment entity for the Stellr Academy platform
+ * Course Enrollment entity for the Uvarsity platform
  * 
  * This entity tracks student enrollments in courses:
  * 

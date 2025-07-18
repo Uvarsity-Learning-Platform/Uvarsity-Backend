@@ -10,7 +10,7 @@ import { ErrorHandlerService } from '../services/error-handler.service';
 import { LoggerService } from '../services/logger.service';
 
 /**
- * Global Exception Filter for Stellr Academy Backend
+ * Global Exception Filter for Uvarsity Backend
  * 
  * This filter catches all unhandled exceptions throughout the application
  * and provides consistent error responses while preventing server crashes.

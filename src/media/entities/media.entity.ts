@@ -12,7 +12,7 @@ import { User } from '../../user/entities/user.entity';
 import { Lesson } from '../../course/entities/lesson.entity';
 
 /**
- * Media entity for the Stellr Academy platform
+ * Media entity for the Uvarsity platform
  * 
  * This entity represents media files (videos, PDFs, images, etc.):
  * 

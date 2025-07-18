@@ -16,7 +16,7 @@ import { ResetPasswordDto, ForgotPasswordDto } from '../dto/reset-password.dto';
 import { VerifyEmailDto } from '../dto/verify-email.dto';
 
 /**
- * Authentication Service for Stellr Academy Backend
+ * Authentication Service for Uvarsity Backend
  * 
  * This service handles all authentication-related business logic:
  * - User registration and login

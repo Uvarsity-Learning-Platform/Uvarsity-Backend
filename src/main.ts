@@ -13,7 +13,7 @@ import { ProcessMonitorService } from './common/services/process-monitor.service
 import { API_VERSIONING_CONFIG } from './common/config/versioning.config';
 
 /**
- * Bootstrap function to initialize and start the Stellr Academy Backend application
+ * Bootstrap function to initialize and start the Uvarsity Backend application
  * This function sets up the NestJS application with all necessary configurations
  */
 async function bootstrap() {
@@ -84,7 +84,7 @@ async function bootstrap() {
 
   // Set up Swagger API documentation
   const config = new DocumentBuilder()
-    .setTitle('Stellr Academy API')
+    .setTitle('Uvarsity API')
     .setDescription(
       'Comprehensive Learning Platform Backend API - Handles authentication, courses, progress tracking, quizzes, certificates, and more',
     )
@@ -123,7 +123,7 @@ async function bootstrap() {
   // Start the application
   await app.listen(port);
 
-  logger.log(`🚀 Stellr Academy Backend is running on port ${port}`, 'Bootstrap');
+  logger.log(`🚀 Uvarsity Backend is running on port ${port}`, 'Bootstrap');
   logger.log(`📖 API Documentation available at http://localhost:${port}/${apiPrefix}/v1/docs`, 'Bootstrap');
   logger.log(`🏥 Health check available at http://localhost:${port}/${apiPrefix}/v1/health`, 'Bootstrap');
   logger.log(`📊 Performance metrics available at http://localhost:${port}/${apiPrefix}/v1/performance/metrics`, 'Bootstrap');

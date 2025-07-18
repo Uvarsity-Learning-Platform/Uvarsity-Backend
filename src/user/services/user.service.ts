@@ -5,7 +5,7 @@ import { User } from '../entities/user.entity';
 import { LoggerService } from '../../common/services/logger.service';
 
 /**
- * User Service for Stellr Academy Backend
+ * User Service for Uvarsity Backend
  * 
  * This service handles all user-related business logic including:
  * - User profile management and updates

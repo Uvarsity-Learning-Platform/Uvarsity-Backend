@@ -20,7 +20,7 @@ import { CertificateService } from '../services/certificate.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 
 /**
- * Certificate Controller for Stellr Academy Backend
+ * Certificate Controller for Uvarsity Backend
  * 
  * This controller handles all certificate-related HTTP endpoints:
  * - Certificate generation and issuance

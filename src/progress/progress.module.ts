@@ -13,7 +13,7 @@ import { ProgressController } from './controllers/progress.controller';
 import { CommonModule } from '../common/common.module';
 
 /**
- * Progress Module for Stellr Academy Backend
+ * Progress Module for Uvarsity Backend
  * 
  * This module tracks user learning progress and achievements:
  * 

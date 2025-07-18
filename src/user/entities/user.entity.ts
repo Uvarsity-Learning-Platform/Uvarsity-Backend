@@ -9,7 +9,7 @@ import {
 import { Exclude } from 'class-transformer';
 
 /**
- * User entity for the Stellr Academy platform
+ * User entity for the Uvarsity platform
  * 
  * This entity represents a learner in the system and stores:
  * 

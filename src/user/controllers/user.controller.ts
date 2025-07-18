@@ -4,7 +4,7 @@ import { UserService } from '../services/user.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 
 /**
- * User Controller for Stellr Academy Backend
+ * User Controller for Uvarsity Backend
  * 
  * This controller handles HTTP endpoints for user management:
  * - User profile viewing and editing

@@ -10,7 +10,7 @@ import { VerifyEmailDto } from '../dto/verify-email.dto';
 import { ResetPasswordDto, ForgotPasswordDto } from '../dto/reset-password.dto';
 
 /**
- * Authentication Controller for Stellr Academy Backend
+ * Authentication Controller for Uvarsity Backend
  * 
  * This controller handles all authentication HTTP endpoints:
  * - User registration (email/password)

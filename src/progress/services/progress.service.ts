@@ -10,7 +10,7 @@ import { Course } from '../../course/entities/course.entity';
 import { CourseEnrollment } from '../../course/entities/course-enrollment.entity';
 
 /**
- * Progress Service for Stellr Academy Backend
+ * Progress Service for Uvarsity Backend
  * 
  * This service handles all learning progress tracking:
  * - Individual lesson progress

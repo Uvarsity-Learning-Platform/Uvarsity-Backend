@@ -14,7 +14,7 @@ import { Lesson } from './lesson.entity';
 import { CourseEnrollment } from './course-enrollment.entity';
 
 /**
- * Course entity for the Stellr Academy platform
+ * Course entity for the Uvarsity platform
  * 
  * This entity represents a course in the learning system:
  * 

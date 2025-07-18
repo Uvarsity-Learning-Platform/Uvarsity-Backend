@@ -8,7 +8,7 @@ import { NotificationTemplate } from '../entities/notification-template.entity';
 import { User } from '../../user/entities/user.entity';
 
 /**
- * Notification Service for Stellr Academy Backend
+ * Notification Service for Uvarsity Backend
  * 
  * This service handles all notification-related business logic:
  * - Email notifications

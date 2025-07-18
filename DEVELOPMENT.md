@@ -1,15 +1,15 @@
-# 🚀 Stellr Academy Backend - Quick Start Guide
+# 🚀 Uvarsity Backend - Quick Start Guide
 
 ## Overview
 
-The Stellr Academy Backend is a comprehensive learning platform API built with NestJS, TypeScript, and PostgreSQL. It provides a complete microservices architecture for managing courses, users, progress tracking, quizzes, certificates, and more.
+The Uvarsity Backend is a comprehensive learning platform API built with NestJS, TypeScript, and PostgreSQL. It provides a complete microservices architecture for managing courses, users, progress tracking, quizzes, certificates, and more.
 
 ## 🏗️ Architecture & Implementation Status
 
 **✅ All services are 100% complete and production-ready**
 
 ```
-Stellr Academy Backend (100% Complete)
+Uvarsity Backend (100% Complete)
 ├── 🔐 Auth Service      ✅ Complete - JWT tokens, OAuth, email/phone verification, password reset
 ├── 👤 User Service      ✅ Complete - Profile management, preferences, onboarding, activity tracking
 ├── 📚 Course Service    ✅ Complete - CRUD operations, enrollment, lessons, categories, search
@@ -664,7 +664,7 @@ docker run -d \
 
 ### 🚀 Quick Start for Frontend Developers
 
-The Stellr Academy Backend is **100% complete** and ready for frontend integration. Here's everything you need to know:
+The Uvarsity Backend is **100% complete** and ready for frontend integration. Here's everything you need to know:
 
 #### **Base Configuration**
 ```javascript
@@ -1030,7 +1030,7 @@ interface Question {
 
 ### **✅ 100% COMPLETE - READY FOR PRODUCTION**
 
-The Stellr Academy Backend is **fully implemented** and ready for frontend integration. All 8 core services are complete with:
+The Uvarsity Backend is **fully implemented** and ready for frontend integration. All 8 core services are complete with:
 
 - **Complete API**: All endpoints implemented and documented
 - **Full Authentication**: JWT, OAuth, email/phone verification, password reset
@@ -1062,6 +1062,6 @@ The Stellr Academy Backend is **fully implemented** and ready for frontend integ
 
 ---
 
-**Built with ❤️ by the Stellr Academy Team**
+**Built with ❤️ by the Uvarsity Team**
 
 *Last Updated: January 2025 - Status: 100% Complete & Production Ready*

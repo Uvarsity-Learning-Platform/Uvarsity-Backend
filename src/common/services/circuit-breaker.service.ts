@@ -33,7 +33,7 @@ export interface CircuitBreakerStats {
 }
 
 /**
- * Circuit Breaker Service for Stellr Academy Backend
+ * Circuit Breaker Service for Uvarsity Backend
  * 
  * Implements the Circuit Breaker pattern to prevent cascading failures
  * and improve system resilience. This service:

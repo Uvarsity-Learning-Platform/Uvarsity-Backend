@@ -1,4 +1,4 @@
-# Stellr Academy Backend - Docker Compose Configuration
+# Uvarsity Backend - Docker Compose Configuration
 # 
 # This docker-compose file sets up the complete development environment
 # including the NestJS backend, PostgreSQL database, and Redis cache.
@@ -48,7 +48,7 @@ services:
       timeout: 5s
       retries: 3
 
-  # Stellr Academy Backend API
+  # Uvarsity Backend API
   api:
     build:
       context: .

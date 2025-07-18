@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 /**
- * Database configuration module for Stellr Academy
+ * Database configuration module for Uvarsity
  * 
  * This module handles the PostgreSQL database connection configuration
  * using TypeORM. For development without PostgreSQL, it can use SQLite.

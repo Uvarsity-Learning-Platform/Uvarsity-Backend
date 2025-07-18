@@ -15,7 +15,7 @@ import { LessonController } from './controllers/lesson.controller';
 import { CommonModule } from '../common/common.module';
 
 /**
- * Course Module for Stellr Academy Backend
+ * Course Module for Uvarsity Backend
  * 
  * This module handles course catalog and lesson content management:
  * 

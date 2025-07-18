@@ -23,7 +23,7 @@ export interface ShutdownHandler {
 }
 
 /**
- * Process Monitor Service for Stellr Academy Backend
+ * Process Monitor Service for Uvarsity Backend
  * 
  * This service provides:
  * - Graceful shutdown handling

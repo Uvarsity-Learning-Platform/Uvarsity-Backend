@@ -13,7 +13,7 @@ import { QuizController } from './controllers/quiz.controller';
 import { CommonModule } from '../common/common.module';
 
 /**
- * Quiz Module for Stellr Academy Backend
+ * Quiz Module for Uvarsity Backend
  * 
  * This module handles quiz functionality and assessments:
  * 

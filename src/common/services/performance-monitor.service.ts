@@ -4,7 +4,7 @@ import { LoggerService } from './logger.service';
 import * as promClient from 'prom-client';
 
 /**
- * Performance Monitoring Service for Stellr Academy Backend
+ * Performance Monitoring Service for Uvarsity Backend
  * 
  * This service provides comprehensive performance monitoring:
  * - Prometheus metrics collection

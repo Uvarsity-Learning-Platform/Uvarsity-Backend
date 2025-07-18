@@ -10,7 +10,7 @@ import { User } from '../../user/entities/user.entity';
 import { Lesson } from '../../course/entities/lesson.entity';
 
 /**
- * Media Service for Stellr Academy Backend
+ * Media Service for Uvarsity Backend
  * 
  * This service handles all media-related business logic:
  * - Video upload and processing

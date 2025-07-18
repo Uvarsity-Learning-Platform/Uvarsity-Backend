@@ -13,7 +13,7 @@ import { User } from '../../user/entities/user.entity';
 import { Lesson } from '../../course/entities/lesson.entity';
 
 /**
- * User Progress entity for the Stellr Academy platform
+ * User Progress entity for the Uvarsity platform
  * 
  * This entity tracks user progress for individual lessons:
  * 

@@ -3,7 +3,7 @@ import { VersioningType } from '@nestjs/common';
 /**
  * API Versioning Configuration
  * 
- * Defines versioning strategy and settings for the Stellr Academy Backend
+ * Defines versioning strategy and settings for the Uvarsity Backend
  */
 export const API_VERSIONING_CONFIG = {
   // Use URI versioning (e.g., /api/v1/users)

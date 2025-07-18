@@ -11,7 +11,7 @@ import { CreateLessonDto } from '../dto/create-lesson.dto';
 import { UpdateLessonDto } from '../dto/update-course.dto';
 
 /**
- * Lesson Service for Stellr Academy Backend
+ * Lesson Service for Uvarsity Backend
  * 
  * This service handles all lesson-related business logic:
  * - Lesson creation, updating, and management
