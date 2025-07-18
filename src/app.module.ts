@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { DatabaseModule } from './database/database.module';
+import { PrismaModule } from './database/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { CourseModule } from './course/course.module';
@@ -49,8 +50,9 @@ import { PerformanceMiddleware } from './common/middleware/performance.middlewar
       },
     ]),
 
-    // Database connection module - handles PostgreSQL connection
+    // Database connection modules - both TypeORM (legacy) and Prisma (new)
     DatabaseModule,
+    PrismaModule,
 
     // Core business logic modules - each represents a microservice
     AuthModule,        // 🔐 Authentication and authorization
