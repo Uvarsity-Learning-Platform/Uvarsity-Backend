@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
+import { AuthPrismaService } from './services/auth-prisma.service';
 import { TokenService } from './services/token.service';
 import { OAuthService } from './services/oauth.service';
 
@@ -96,7 +97,8 @@ import { CommonModule } from '../common/common.module';
 
   providers: [
     // Core authentication services
-    AuthService,    // Main authentication business logic
+    AuthService,    // Main authentication business logic (TypeORM)
+    AuthPrismaService, // Main authentication business logic (Prisma)
     TokenService,   // JWT and refresh token management
     OAuthService,   // OAuth integration (Google, etc.)
 
@@ -111,6 +113,7 @@ import { CommonModule } from '../common/common.module';
 
   exports: [
     AuthService,    // Export for use in other modules
+    AuthPrismaService, // Export Prisma service for gradual migration
     TokenService,   // Export for token operations in other modules
     JwtAuthGuard,   // Export for protecting routes in other modules
   ],
@@ -121,6 +124,6 @@ export class AuthModule {
    * Logs successful initialization of auth services
    */
   constructor() {
-    console.log('🔐 Authentication module initialized - JWT, OAuth, and local auth ready');
+    console.log('🔐 Authentication module initialized - JWT, OAuth, and local auth ready (TypeORM + Prisma)');
   }
 }

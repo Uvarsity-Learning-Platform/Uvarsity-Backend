@@ -1,0 +1,386 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev-database.sqlite"
+}
+
+model User {
+  id                        String   @id @default(cuid())
+  email                     String   @unique
+  fullName                  String
+  phone                     String?  @unique
+  avatarUrl                 String?
+  passwordHash              String?
+  isEmailVerified           Boolean  @default(false)
+  isPhoneVerified           Boolean  @default(false)
+  status                    String   @default("active")
+  role                      String   @default("user")
+  oauthProvider             String?
+  oauthProviderId           String?
+  preferredLanguage         String   @default("en")
+  timezone                  String   @default("UTC")
+  notificationPreferences   String   @default("{\"email\":{\"courseUpdates\":true,\"reminderNotifications\":true,\"achievementAlerts\":true,\"weeklyProgress\":true},\"sms\":{\"reminderNotifications\":false,\"urgentUpdates\":false},\"push\":{\"lessonReminders\":true,\"quizAvailable\":true,\"achievementUnlocked\":true}}")
+  hasCompletedOnboarding    Boolean  @default(false)
+  isFirstLogin              Boolean  @default(true)
+  lastActiveAt              DateTime?
+  lastLoginAt               DateTime?
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+  deletedAt                 DateTime?
+
+  // Relationships
+  courses                   Course[]
+  enrollments               CourseEnrollment[]
+  progress                  UserProgress[]
+  refreshTokens             RefreshToken[]
+  certificates              Certificate[]
+  quizAttempts              QuizAttempt[]
+  notifications             Notification[]
+  media                     Media[]
+
+  @@map("users")
+}
+
+model Course {
+  id                  String    @id @default(cuid())
+  title               String
+  description         String
+  summary             String?
+  thumbnailUrl        String?
+  category            String
+  tags                String    @default("[]")
+  level               String    @default("beginner")
+  estimatedDuration   Float?
+  language            String    @default("en")
+  instructorId        String
+  status              String    @default("draft")
+  pricing             String    @default("{\"type\":\"free\",\"price\":0,\"currency\":\"USD\"}")
+  enrollmentSettings  String    @default("{\"isOpen\":true,\"maxEnrollments\":null,\"enrollmentDeadline\":null}")
+  prerequisites       String    @default("[]")
+  learningObjectives  String    @default("[]")
+  enrollmentCount     Int       @default(0)
+  averageRating       Float     @default(0)
+  ratingCount         Int       @default(0)
+  completionRate      Float     @default(0)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  publishedAt         DateTime?
+  archivedAt          DateTime?
+
+  // Relationships
+  instructor          User               @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  lessons             Lesson[]
+  enrollments         CourseEnrollment[]
+  quizzes             Quiz[]
+  certificates        Certificate[]
+
+  @@map("courses")
+}
+
+model Lesson {
+  id                  String    @id @default(cuid())
+  title               String
+  description         String?
+  content             String?
+  contentType         String    @default("text")
+  order               Int
+  durationMinutes     Int?
+  level               String    @default("beginner")
+  videoUrl            String?
+  videoDuration       Int?
+  resources           String    @default("[]")
+  learningObjectives  String    @default("[]")
+  keyConcepts         String    @default("[]")
+  status              String    @default("draft")
+  accessSettings      String    @default("{\"isPreview\":false,\"requiresEnrollment\":true,\"prerequisiteCompleted\":false}")
+  prerequisites       String    @default("[]")
+  completionCount     Int       @default(0)
+  averageTimeSpent    Float     @default(0)
+  engagementScore     Float     @default(0)
+  courseId            String
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  publishedAt         DateTime?
+
+  // Relationships
+  course              Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progress            UserProgress[]
+
+  @@map("lessons")
+}
+
+model CourseEnrollment {
+  id                      String    @id @default(cuid())
+  userId                  String
+  courseId                String
+  status                  String    @default("active")
+  enrollmentMethod        String    @default("self")
+  progressPercentage      Float     @default(0)
+  lessonsCompleted        Int       @default(0)
+  totalLessons            Int       @default(0)
+  timeSpentMinutes        Float     @default(0)
+  lastAccessedLessonId    String?
+  currentLessonId         String?
+  isCompleted             Boolean   @default(false)
+  completedAt             DateTime?
+  finalScore              Float?
+  isCertificateEligible   Boolean   @default(false)
+  certificateIssuedAt     DateTime?
+  paymentStatus           String    @default("free")
+  paymentAmount           Float     @default(0)
+  paymentCurrency         String    @default("USD")
+  paymentTransactionId    String?
+  expiresAt               DateTime?
+  accessNotes             String?
+  lastActivityAt          DateTime?
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  startedAt               DateTime?
+  suspendedAt             DateTime?
+  droppedAt               DateTime?
+
+  // Relationships
+  user                    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course                  Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@map("course_enrollments")
+}
+
+model UserProgress {
+  id                  String    @id @default(cuid())
+  userId              String
+  lessonId            String
+  isCompleted         Boolean   @default(false)
+  progressPercentage  Float     @default(0)
+  currentPosition     Float     @default(0)
+  timeSpentMinutes    Float     @default(0)
+  visitCount          Int       @default(0)
+  startedAt           DateTime?
+  completedAt         DateTime?
+  lastAccessedAt      DateTime?
+  engagementScore     Float     @default(0)
+  reviewCount         Int       @default(0)
+  difficultyRating    Int?
+  userRating          Int?
+  notes               String?
+  metadata            String    @default("{}")
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  // Relationships
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson              Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@map("user_progress")
+}
+
+model RefreshToken {
+  id                String    @id @default(cuid())
+  tokenHash         String    @unique
+  userId            String
+  expiresAt         DateTime
+  isRevoked         Boolean   @default(false)
+  revokedAt         DateTime?
+  revocationReason  String?
+  userAgent         String?
+  ipAddress         String?
+  deviceName        String?
+  lastUsedAt        DateTime?
+  createdAt         DateTime  @default(now())
+
+  // Relationships
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model Quiz {
+  id                  String    @id @default(cuid())
+  title               String
+  description         String?
+  instructions        String?
+  courseId            String
+  duration            Int?
+  maxAttempts         Int       @default(3)
+  passingScore        Float     @default(70)
+  isRequired          Boolean   @default(false)
+  randomizeQuestions  Boolean   @default(false)
+  showResults         Boolean   @default(true)
+  allowReview         Boolean   @default(true)
+  settings            String    @default("{}")
+  status              String    @default("draft")
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  // Relationships
+  course              Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  questions           Question[]
+  attempts            QuizAttempt[]
+
+  @@map("quizzes")
+}
+
+model Question {
+  id            String    @id @default(cuid())
+  quizId        String
+  question      String
+  type          String
+  options       String    @default("[]")
+  correctAnswer String
+  explanation   String?
+  order         Int
+  points        Float     @default(1)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relationships
+  quiz          Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@map("questions")
+}
+
+model QuizAttempt {
+  id            String    @id @default(cuid())
+  userId        String
+  quizId        String
+  answers       String    @default("{}")
+  score         Float?
+  maxScore      Float?
+  passed        Boolean   @default(false)
+  timeSpent     Int?
+  startedAt     DateTime  @default(now())
+  completedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relationships
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz          Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@map("quiz_attempts")
+}
+
+model Certificate {
+  id                String    @id @default(cuid())
+  userId            String
+  courseId          String
+  templateId        String?
+  certificateNumber String    @unique
+  title             String
+  studentName       String
+  courseName        String
+  completionDate    DateTime
+  issueDate         DateTime  @default(now())
+  issuedBy          String
+  certificateData   String    @default("{}")
+  pdfUrl            String?
+  verificationCode  String    @unique
+  isRevoked         Boolean   @default(false)
+  revokedAt         DateTime?
+  revokedBy         String?
+  revocationReason  String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relationships
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course            Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  template          CertificateTemplate? @relation(fields: [templateId], references: [id])
+
+  @@map("certificates")
+}
+
+model CertificateTemplate {
+  id              String    @id @default(cuid())
+  name            String
+  description     String?
+  templateData    String    @default("{}")
+  htmlTemplate    String
+  cssStyles       String?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relationships
+  certificates    Certificate[]
+
+  @@map("certificate_templates")
+}
+
+model Notification {
+  id                String    @id @default(cuid())
+  userId            String
+  templateId        String?
+  title             String
+  message           String
+  type              String
+  priority          String    @default("medium")
+  channels          String    @default("[]")
+  status            String    @default("pending")
+  metadata          String    @default("{}")
+  scheduledAt       DateTime?
+  sentAt            DateTime?
+  deliveredAt       DateTime?
+  readAt            DateTime?
+  failedAt          DateTime?
+  failureReason     String?
+  retryCount        Int       @default(0)
+  maxRetries        Int       @default(3)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relationships
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template          NotificationTemplate? @relation(fields: [templateId], references: [id])
+
+  @@map("notifications")
+}
+
+model NotificationTemplate {
+  id              String    @id @default(cuid())
+  name            String
+  description     String?
+  type            String
+  channels        String    @default("[]")
+  templates       String    @default("{}")
+  variables       String    @default("[]")
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relationships
+  notifications   Notification[]
+
+  @@map("notification_templates")
+}
+
+model Media {
+  id              String    @id @default(cuid())
+  fileName        String
+  originalName    String
+  mimeType        String
+  fileSize        Int
+  filePath        String
+  url             String
+  thumbnailUrl    String?
+  metadata        String    @default("{}")
+  uploadedById    String
+  status          String    @default("uploaded")
+  visibility      String    @default("private")
+  expiresAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relationships
+  uploadedBy      User      @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+
+  @@map("media")
+}

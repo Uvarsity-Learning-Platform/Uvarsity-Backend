@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserController } from './controllers/user.controller';
 import { UserService } from './services/user.service';
+import { UserPrismaService } from './services/user-prisma.service';
 import { User } from './entities/user.entity';
 import { CommonModule } from '../common/common.module';
 
@@ -54,11 +55,13 @@ import { CommonModule } from '../common/common.module';
   ],
   
   providers: [
-    UserService, // Business logic for user management
+    UserService, // Business logic for user management (TypeORM)
+    UserPrismaService, // Business logic for user management (Prisma)
   ],
   
   exports: [
     UserService, // Export for use in other modules (auth, progress, etc.)
+    UserPrismaService, // Export Prisma service for gradual migration
     TypeOrmModule, // Export TypeORM for User entity access
   ],
 })
@@ -68,6 +71,6 @@ export class UserModule {
    * Logs successful initialization of user services
    */
   constructor() {
-    console.log('👤 User management module initialized - Profile, preferences, and onboarding ready');
+    console.log('👤 User management module initialized - Profile, preferences, and onboarding ready (TypeORM + Prisma)');
   }
 }
