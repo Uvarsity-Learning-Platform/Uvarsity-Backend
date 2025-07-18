@@ -13,7 +13,7 @@ import { CertificateController } from './controllers/certificate.controller';
 import { CommonModule } from '../common/common.module';
 
 /**
- * Certificate Module for Stellr Academy Backend
+ * Certificate Module for Uvarsity Backend
  * 
  * This module handles certificate generation and management:
  * 

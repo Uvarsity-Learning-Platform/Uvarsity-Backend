@@ -6,7 +6,7 @@ import { V1_ROUTES, V2_ROUTES } from '../config/versioning.config';
 /**
  * Health check controller for monitoring and uptime verification
  * 
- * Provides endpoints to check the health and status of the Stellr Academy Backend.
+ * Provides endpoints to check the health and status of the Uvarsity Backend.
  * These endpoints are used by:
  * - Load balancers for health checks
  * - Monitoring systems (Prometheus, DataDog, etc.)

@@ -12,7 +12,7 @@ import { Course } from '../../course/entities/course.entity';
 import { CourseEnrollment } from '../../course/entities/course-enrollment.entity';
 
 /**
- * Certificate Service for Stellr Academy Backend
+ * Certificate Service for Uvarsity Backend
  * 
  * This service handles all certificate-related business logic:
  * - Certificate generation and issuance
@@ -115,7 +115,7 @@ export class CertificateService {
         completedLessons: enrollment.lessonsCompleted,
         timeSpent: enrollment.timeSpentMinutes,
         completionDate: enrollment.completedAt,
-        instructorName: 'Stellr Academy',
+        instructorName: 'Uvarsity',
         courseDuration: course.estimatedDuration,
         skillsAcquired: course.learningObjectives || [],
         certificateVersion: '1.0',
@@ -358,7 +358,7 @@ export class CertificateService {
           <h3>{{courseName}}</h3>
           <p>on {{date}}</p>
           <div class="signature">
-            <p>Stellr Academy</p>
+            <p>Uvarsity</p>
           </div>
         </div>
       `,

@@ -12,7 +12,7 @@ import { User } from '../../user/entities/user.entity';
 import { Course } from '../../course/entities/course.entity';
 
 /**
- * Certificate entity for the Stellr Academy platform
+ * Certificate entity for the Uvarsity platform
  * 
  * This entity represents certificates awarded to users:
  * 

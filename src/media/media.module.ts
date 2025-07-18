@@ -12,7 +12,7 @@ import { MediaController } from './controllers/media.controller';
 import { CommonModule } from '../common/common.module';
 
 /**
- * Media Module for Stellr Academy Backend
+ * Media Module for Uvarsity Backend
  * 
  * This module handles media file management and delivery:
  * 

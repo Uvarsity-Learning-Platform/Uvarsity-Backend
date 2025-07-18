@@ -6,7 +6,7 @@ import { User } from './entities/user.entity';
 import { CommonModule } from '../common/common.module';
 
 /**
- * User Module for Stellr Academy Backend
+ * User Module for Uvarsity Backend
  * 
  * This module handles all user-related functionality including:
  * 

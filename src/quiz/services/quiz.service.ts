@@ -10,7 +10,7 @@ import { User } from '../../user/entities/user.entity';
 import { Lesson } from '../../course/entities/lesson.entity';
 
 /**
- * Quiz Service for Stellr Academy Backend
+ * Quiz Service for Uvarsity Backend
  * 
  * This service handles all quiz-related business logic:
  * - Quiz creation and management

@@ -2,7 +2,7 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { LoggerService } from './logger.service';
 
 /**
- * Centralized error handling service for the Stellr Academy Backend
+ * Centralized error handling service for the Uvarsity Backend
  * 
  * This service provides consistent error handling and formatting across all modules.
  * It ensures that:

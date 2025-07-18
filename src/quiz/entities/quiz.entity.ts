@@ -13,7 +13,7 @@ import { Lesson } from '../../course/entities/lesson.entity';
 import { User } from '../../user/entities/user.entity';
 
 /**
- * Quiz entity for the Stellr Academy platform
+ * Quiz entity for the Uvarsity platform
  * 
  * This entity represents a quiz/assessment within a lesson:
  * 

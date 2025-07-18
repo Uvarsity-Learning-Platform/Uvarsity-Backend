@@ -10,7 +10,7 @@ import { NotificationService } from './services/notification.service';
 import { CommonModule } from '../common/common.module';
 
 /**
- * Notification Module for Stellr Academy Backend
+ * Notification Module for Uvarsity Backend
  * 
  * This module handles all notification and communication services:
  * 

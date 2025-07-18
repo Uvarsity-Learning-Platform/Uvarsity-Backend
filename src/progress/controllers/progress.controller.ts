@@ -14,7 +14,7 @@ import { ProgressService } from '../services/progress.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 
 /**
- * Progress Controller for Stellr Academy Backend
+ * Progress Controller for Uvarsity Backend
  * 
  * This controller handles learning progress tracking:
  * - Lesson progress tracking

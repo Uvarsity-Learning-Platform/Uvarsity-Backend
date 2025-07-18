@@ -11,7 +11,7 @@ import {
 import { User } from '../../user/entities/user.entity';
 
 /**
- * CertificateTemplate entity for the Stellr Academy platform
+ * CertificateTemplate entity for the Uvarsity platform
  * 
  * This entity represents certificate templates for PDF generation:
  * 

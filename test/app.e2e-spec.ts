@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 
 /**
- * End-to-End Test Suite for Stellr Academy Backend
+ * End-to-End Test Suite for Uvarsity Backend
  * 
  * This test suite verifies the complete application functionality
  * by testing HTTP endpoints and full request/response cycles.
@@ -15,7 +15,7 @@ import { AppModule } from './../src/app.module';
  * - Basic API response format
  * - Error handling and validation
  */
-describe('Stellr Academy Backend (e2e)', () => {
+describe('Uvarsity Backend (e2e)', () => {
   let app: INestApplication;
 
   // Setup test application before all tests

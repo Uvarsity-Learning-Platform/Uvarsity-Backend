@@ -1,4 +1,4 @@
-# Stellr Academy Backend - Docker Configuration
+# Uvarsity Backend - Docker Configuration
 # 
 # This Dockerfile creates a production-ready container for the NestJS backend
 # with optimized build process and security best practices.
@@ -75,7 +75,7 @@ ENV NODE_ENV=production
 CMD ["node", "dist/main"]
 
 # Metadata labels for container information
-LABEL maintainer="Stellr Academy Team" \
-      description="Stellr Academy Backend - Learning Platform API" \
+LABEL maintainer="Uvarsity Team" \
+      description="Uvarsity Backend - Learning Platform API" \
       version="1.0.0" \
       org.opencontainers.image.source="https://github.com/Uvarsity-Learning-Platform/Stellr-Backend"

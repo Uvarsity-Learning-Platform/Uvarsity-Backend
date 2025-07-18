@@ -20,7 +20,7 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { CommonModule } from '../common/common.module';
 
 /**
- * Authentication Module for Stellr Academy Backend
+ * Authentication Module for Uvarsity Backend
  * 
  * This module handles all authentication-related functionality including:
  * 

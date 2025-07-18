@@ -11,7 +11,7 @@ import {
 import { Course } from './course.entity';
 
 /**
- * Lesson entity for the Stellr Academy platform
+ * Lesson entity for the Uvarsity platform
  * 
  * This entity represents a lesson within a course:
  * 

@@ -18,7 +18,7 @@ import { QuizService } from '../services/quiz.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 
 /**
- * Quiz Controller for Stellr Academy Backend
+ * Quiz Controller for Uvarsity Backend
  * 
  * This controller handles all quiz-related HTTP endpoints:
  * - Quiz creation and management

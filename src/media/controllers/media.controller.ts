@@ -23,7 +23,7 @@ import { MediaService } from '../services/media.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 
 /**
- * Media Controller for Stellr Academy Backend
+ * Media Controller for Uvarsity Backend
  * 
  * This controller handles all media-related HTTP endpoints:
  * - Media upload and processing

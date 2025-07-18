@@ -1,4 +1,4 @@
-# 🧠 Stellr Academy - Backend
+# 🧠 Uvarsity - Backend
 
 > **Production-Ready Learning Platform Backend** built with NestJS, TypeScript, and PostgreSQL
 
@@ -284,5 +284,5 @@ This project is licensed under the ISC License.
 
 ---
 
-**Built with ❤️ by the Stellr Academy Team**
+**Built with ❤️ by the Uvarsity Team**
 

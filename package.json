@@ -1,7 +1,7 @@
 {
-  "name": "stellr-backend",
+  "name": "uvarsity-backend",
   "version": "1.0.0",
-  "description": "Stellr Academy Backend - A comprehensive learning platform backend built with NestJS",
+  "description": "Uvarsity Backend - A comprehensive learning platform backend built with NestJS",
   "main": "dist/main.js",
   "scripts": {
     "build": "nest build",
@@ -32,7 +32,7 @@
     "jwt",
     "oauth"
   ],
-  "author": "Stellr Academy Team",
+  "author": "Uvarsity Team",
   "license": "ISC",
   "dependencies": {
     "@nestjs/common": "^11.1.3",

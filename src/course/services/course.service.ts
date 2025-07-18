@@ -14,7 +14,7 @@ import { UpdateCourseDto } from '../dto/update-course.dto';
 import { CourseQueryDto, EnrollmentQueryDto } from '../dto/query-course.dto';
 
 /**
- * Course Service for Stellr Academy Backend
+ * Course Service for Uvarsity Backend
  * 
  * This service handles all course-related business logic:
  * - Course creation, updating, and management

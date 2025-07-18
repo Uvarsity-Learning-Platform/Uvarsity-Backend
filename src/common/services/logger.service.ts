@@ -1,7 +1,7 @@
 import { Injectable, LoggerService as NestLoggerService } from '@nestjs/common';
 
 /**
- * Centralized logging service for the Stellr Academy Backend
+ * Centralized logging service for the Uvarsity Backend
  * 
  * This service provides structured logging throughout the application with:
  * - Different log levels (error, warn, log, debug, verbose)

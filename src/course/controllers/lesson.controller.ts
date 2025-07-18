@@ -18,7 +18,7 @@ import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { UpdateLessonDto } from '../dto/update-course.dto';
 
 /**
- * Lesson Controller for Stellr Academy Backend
+ * Lesson Controller for Uvarsity Backend
  * 
  * This controller handles lesson-specific HTTP endpoints:
  * - Lesson content access

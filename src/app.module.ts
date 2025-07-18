@@ -16,7 +16,7 @@ import { HealthController } from './common/controllers/health.controller';
 import { PerformanceMiddleware } from './common/middleware/performance.middleware';
 
 /**
- * Root application module for Stellr Academy Backend
+ * Root application module for Uvarsity Backend
  * 
  * This module orchestrates all the microservices and shared functionality:
  * 
@@ -84,9 +84,9 @@ export class AppModule implements NestModule {
 
   /**
    * Application module constructor
-   * Logs successful initialization of the Stellr Academy Backend
+   * Logs successful initialization of the Uvarsity Backend
    */
   constructor() {
-    console.log('🏫 Stellr Academy Backend modules initialized successfully');
+    console.log('🏫 Uvarsity Backend modules initialized successfully');
   }
 }

@@ -24,7 +24,7 @@ import { UpdateCourseDto } from '../dto/update-course.dto';
 import { CourseQueryDto, EnrollmentQueryDto } from '../dto/query-course.dto';
 
 /**
- * Course Controller for Stellr Academy Backend
+ * Course Controller for Uvarsity Backend
  * 
  * This controller handles all course-related HTTP endpoints:
  * - Course catalog and search

@@ -11,7 +11,7 @@ import {
 import { User } from '../../user/entities/user.entity';
 
 /**
- * NotificationTemplate entity for the Stellr Academy platform
+ * NotificationTemplate entity for the Uvarsity platform
  * 
  * This entity represents notification templates:
  * 
