@@ -31,12 +31,14 @@ The backend is a distributed microservices architecture, ensuring separation of 
 **Entities:** Users, User Accounts.
 
 **Responsibilities:**
+
 - Validate and store user credentials (email/phone, password hash).
 - Implement OAuth flows (e.g., Google, Facebook) with token management.
 - Handle session expiration and re-authentication.
 - Update user profiles (name, avatar).
 
 **Endpoints:**
+
 - `POST /api/auth/user/register` - Register new user.
 - `POST /api/auth/user/login` - Authenticate user and issue JWT.
 - `GET /api/auth/user/profile` - Retrieve user profile.
@@ -51,11 +53,13 @@ The backend is a distributed microservices architecture, ensuring separation of 
 **Entities:** Courses, Course Catalog, Media Repository.
 
 **Responsibilities:**
+
 - Create, update, and delete course metadata (title, instructor, price).
 - Manage course availability via catalog.
 - Store and serve course media (videos, images, documents).
 
 **Endpoints:**
+
 - `GET /api/courses/catalog/list` - List available courses.
 - `POST /api/courses` - Create new course.
 - `POST /api/courses/{id}/media` - Upload course media.
@@ -69,11 +73,13 @@ The backend is a distributed microservices architecture, ensuring separation of 
 **Entities:** Enrollments.
 
 **Responsibilities:**
+
 - Validate enrollment requests and prevent duplicates.
 - Create enrollment records and link to payment transactions.
 - Trigger welcome notifications upon successful enrollment.
 
 **Endpoints:**
+
 - `POST /api/enrollments/enroll` - Enroll user in course.
 - `GET /api/enrollments/{id}` - Retrieve enrollment status.
 
@@ -86,11 +92,13 @@ The backend is a distributed microservices architecture, ensuring separation of 
 **Entities:** Progress Tracking.
 
 **Responsibilities:**
+
 - Record module completion and progress percentage.
 - Support resume functionality with last accessed timestamp.
 - Track optional time spent per module.
 
 **Endpoints:**
+
 - `GET /api/progress/{enrollmentId}` - Fetch progress data.
 - `POST /api/progress/update` - Update progress.
 
@@ -103,11 +111,13 @@ The backend is a distributed microservices architecture, ensuring separation of 
 **Entities:** Certificates.
 
 **Responsibilities:**
+
 - Verify completion criteria (100% progress, optional quizzes).
 - Generate PDF certificates with user details and unique IDs.
 - Provide downloadable links and verification URLs.
 
 **Endpoints:**
+
 - `POST /api/certificates/generate` - Issue certificate.
 - `GET /api/certificates/{id}/download` - Download certificate.
 
@@ -120,11 +130,13 @@ The backend is a distributed microservices architecture, ensuring separation of 
 **Entities:** Payment Gateway.
 
 **Responsibilities:**
+
 - Initiate payment requests with external gateways (e.g., Stripe, PayPal).
 - Verify transaction status and update records.
 - Notify users of payment success or failure.
 
 **Endpoints:**
+
 - `POST /api/payments/initiate` - Start payment process.
 - `GET /api/payments/status/{transactionId}` - Check payment status.
 
@@ -137,11 +149,13 @@ The backend is a distributed microservices architecture, ensuring separation of 
 **Entities:** Notifications, Notification Log.
 
 **Responsibilities:**
+
 - Send enrollment confirmations, course reminders, and certificate alerts.
 - Log delivery status for auditing.
 - Support optional PWA push notifications.
 
 **Endpoints:**
+
 - `POST /api/notifications/send` - Trigger notification.
 - `GET /api/notifications/log` - Retrieve delivery logs.
 
@@ -154,11 +168,13 @@ The backend is a distributed microservices architecture, ensuring separation of 
 **Entities:** Analytics.
 
 **Responsibilities:**
+
 - Track popular courses, user progress, and transaction metrics.
 - Generate reports for admin dashboard.
 - Store events in a time-series format.
 
 **Endpoints:**
+
 - `GET /api/analytics/courses` - Fetch course analytics.
 - `GET /api/analytics/users` - Fetch user analytics.
 
@@ -171,11 +187,13 @@ The backend is a distributed microservices architecture, ensuring separation of 
 **Entities:** Users (for management), Courses, Certificates.
 
 **Responsibilities:**
+
 - View, block, or unblock users and assign roles.
 - Create, edit, or delete courses and upload media.
 - Design certificate templates and manually issue/revoke certificates.
 
 **Endpoints:**
+
 - `GET /api/admin/users` - List all users.
 - `POST /api/admin/courses` - Create course.
 - `POST /api/admin/certificates/issue` - Issue certificate manually.
@@ -189,11 +207,13 @@ The backend is a distributed microservices architecture, ensuring separation of 
 **Entities:** Users.
 
 **Responsibilities:**
+
 - Retrieve and update user preferences.
 - Display active/completed courses and progress stats.
 - Facilitate certificate downloads and notification settings.
 
 **Endpoints:**
+
 - `GET /api/user/dashboard` - Fetch user dashboard data.
 - `PUT /api/user/preferences` - Update user preferences.
 - `GET /api/user/certificates` - List downloadable certificates.
@@ -207,6 +227,7 @@ The system utilizes a relational database with the following detailed entities a
 ### Users
 
 **Attributes:**
+
 - `user_id` (INT, Primary Key, Unique Identifier)
 - `username` (VARCHAR(50), User login name)
 - `email` (VARCHAR(100), Unique, User email address)
@@ -223,6 +244,7 @@ The system utilizes a relational database with the following detailed entities a
 ### User Accounts
 
 **Attributes:**
+
 - `account_id` (INT, Primary Key, Unique Identifier)
 - `user_id` (INT, Foreign Key to Users, Links to user)
 - `provider` (VARCHAR(50), OAuth provider, e.g., Google)
@@ -235,6 +257,7 @@ The system utilizes a relational database with the following detailed entities a
 ### Courses
 
 **Attributes:**
+
 - `course_id` (INT, Primary Key, Unique Identifier)
 - `title` (VARCHAR(100), Course title)
 - `instructor_id` (INT, Foreign Key to Users, Links to instructor)
@@ -253,6 +276,7 @@ The system utilizes a relational database with the following detailed entities a
 ### Course Catalog
 
 **Attributes:**
+
 - `catalog_id` (INT, Primary Key, Unique Identifier)
 - `course_id` (INT, Foreign Key to Courses, Links to course)
 - `is_active` (BOOLEAN, Course availability status)
@@ -262,6 +286,7 @@ The system utilizes a relational database with the following detailed entities a
 ### Enrollments
 
 **Attributes:**
+
 - `enrollment_id` (INT, Primary Key, Unique Identifier)
 - `user_id` (INT, Foreign Key to Users, Links to user)
 - `course_id` (INT, Foreign Key to Courses, Links to course)
@@ -273,6 +298,7 @@ The system utilizes a relational database with the following detailed entities a
 ### Progress Tracking
 
 **Attributes:**
+
 - `progress_id` (INT, Primary Key, Unique Identifier)
 - `enrollment_id` (INT, Foreign Key to Enrollments, Links to enrollment)
 - `module_id` (INT, Foreign Key to future lessons table)
@@ -285,6 +311,7 @@ The system utilizes a relational database with the following detailed entities a
 ### Certificates
 
 **Attributes:**
+
 - `certificate_id` (INT, Primary Key, Unique Identifier)
 - `user_id` (INT, Foreign Key to Users, Links to user)
 - `course_id` (INT, Foreign Key to Courses, Links to course)
@@ -298,6 +325,7 @@ The system utilizes a relational database with the following detailed entities a
 ### Payment Gateway
 
 **Attributes:**
+
 - `payment_id` (INT, Primary Key, Unique Identifier)
 - `user_id` (INT, Foreign Key to Users, Links to user)
 - `course_id` (INT, Foreign Key to Courses, Links to course)
@@ -312,6 +340,7 @@ The system utilizes a relational database with the following detailed entities a
 ### Notifications
 
 **Attributes:**
+
 - `notification_id` (INT, Primary Key, Unique Identifier)
 - `user_id` (INT, Foreign Key to Users, Links to user)
 - `type` (ENUM('email', 'in_app', 'push'), Notification type)
@@ -324,6 +353,7 @@ The system utilizes a relational database with the following detailed entities a
 ### Notification Log
 
 **Attributes:**
+
 - `log_id` (INT, Primary Key, Unique Identifier)
 - `notification_id` (INT, Foreign Key to Notifications, Links to notification)
 - `delivery_status` (VARCHAR(20), Delivery status)
@@ -334,6 +364,7 @@ The system utilizes a relational database with the following detailed entities a
 ### Media Repository
 
 **Attributes:**
+
 - `media_id` (INT, Primary Key, Unique Identifier)
 - `course_id` (INT, Foreign Key to Courses, Links to course)
 - `media_type` (ENUM('video', 'image', 'document'), Media type)
@@ -345,6 +376,7 @@ The system utilizes a relational database with the following detailed entities a
 ### Analytics
 
 **Attributes:**
+
 - `analytic_id` (INT, Primary Key, Unique Identifier)
 - `course_id` (INT, Foreign Key to Courses, Links to course)
 - `user_id` (INT, Foreign Key to Users, Links to user)
@@ -359,7 +391,8 @@ The system utilizes a relational database with the following detailed entities a
 **Chosen Process:** Implement Scrum with 5-day sprints for iterative development and Kanban with WIP limits (e.g., 3 tasks per developer) for task flow optimization. This aligns with Pressman Chapters 2-3, supporting rapid prototyping and continuous improvement for a team collaboration project.
 
 **DevSecOps Guard-rails:**
-- **Branch Protection:** Protect main, develop, and release/* branches, requiring two approvals and passing CI checks.
+
+- **Branch Protection:** Protect main, develop, and release/\* branches, requiring two approvals and passing CI checks.
 - **CI Test Coverage Gate:** Enforce 80% unit test coverage, integrated with Jenkins or GitHub Actions.
 - **Secret Scanning:** Use tools like TruffleHog to detect and block secrets in commits.
 
