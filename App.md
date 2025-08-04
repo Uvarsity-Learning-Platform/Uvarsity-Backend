@@ -5,17 +5,19 @@ This README provides an exhaustive guide for the backend development of the Onli
 
 ## Project Structure
 Adopt a clean architecture with a modular file naming convention: `{service}/{entity}/{action}.{type}` (e.g., `auth/user/register.service.js`, `courses/catalog/list.controller.js`, `payment/gateway/process.request.js`). Each microservice should reside in its own directory under the `services/` root folder, with subdirectories for `controllers`, `services`, `models`, and `utils`. Example structure:
+
 - `services/auth/`
   - `controllers/user.controller.js`
   - `services/user.service.js`
   - `models/user.model.js`
   - `utils/auth.utils.js`
+
 Use a consistent RESTful routing structure mirroring the file system (e.g., `/api/auth/user/register`, `/api/courses/catalog/list`, `/api/payment/gateway/status`) to ensure intuitive API navigation. All configuration files (e.g., `.env`, `config.json`) should be placed in a `config/` directory at the root level.
 
 ## Architecture
 The backend is a distributed microservices architecture, ensuring separation of concerns, scalability, and fault isolation. Services communicate via asynchronous messaging (e.g., RabbitMQ for events like enrollment or payment success) and synchronous RESTful APIs routed through an API Gateway (e.g., Kong or Express Gateway). Each service should be stateless, with state management handled by a centralized database or cache (e.g., Redis).
 
-### Microservices
+## Microservices
 1. **Auth Service**
    - **Purpose**: Manages user lifecycle, including registration, login, OAuth, and profile management.
    - **Entities**: Users, User Accounts.
@@ -27,23 +29,23 @@ The backend is a distributed microservices architecture, ensuring separation of 
    - **Endpoints**:
      - `POST /api/auth/user/register`
        - **Request**: `{ "email": "string", "phone": "string", "password": "string", "name": "string", "avatarUrl": "string" }`
-       - **Response**: 
+       - **Response**:
          - Success (200 OK): `{ "status": "success", "data": { "userId": 1, "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", "message": "User registered successfully" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (400 Bad Request): `{ "status": "error", "data": null, "error": { "errorCode": 400, "message": "Invalid input data" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (500 Internal Server Error): `{ "status": "error", "data": null, "error": { "errorCode": 500, "message": "Server error occurred" }, "timestamp": "2025-07-29T12:30:00Z" }`
      - `POST /api/auth/user/login`
        - **Request**: `{ "email": "string", "password": "string" }` or `{ "provider": "string", "providerUserId": "string", "accessToken": "string" }`
-       - **Response**: 
+       - **Response**:
          - Success (200 OK): `{ "status": "success", "data": { "userId": 1, "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", "message": "Login successful" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (401 Unauthorized): `{ "status": "error", "data": null, "error": { "errorCode": 401, "message": "Invalid credentials" }, "timestamp": "2025-07-29T12:30:00Z" }`
      - `GET /api/auth/user/profile`
        - **Request**: (Requires Authorization header with JWT)
-       - **Response**: 
+       - **Response**:
          - Success (200 OK): `{ "status": "success", "data": { "userId": 1, "username": "john_doe", "email": "john@example.com", "name": "John Doe", "avatarUrl": "https://example.com/avatar.jpg", "role": "student" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (404 Not Found): `{ "status": "error", "data": null, "error": { "errorCode": 404, "message": "User not found" }, "timestamp": "2025-07-29T12:30:00Z" }`
      - `PUT /api/auth/user/profile`
        - **Request**: `{ "name": "string", "avatarUrl": "string" }` (Requires Authorization header with JWT)
-       - **Response**: 
+       - **Response**:
          - Success (200 OK): `{ "status": "success", "data": { "userId": 1, "message": "Profile updated successfully" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (400 Bad Request): `{ "status": "error", "data": null, "error": { "errorCode": 400, "message": "Invalid input data" }, "timestamp": "2025-07-29T12:30:00Z" }`
    - **Dependencies**: OAuth providers, JWT library.
@@ -58,12 +60,12 @@ The backend is a distributed microservices architecture, ensuring separation of 
    - **Endpoints**:
      - `GET /api/courses/catalog/list`
        - **Request**: `{ "category": "string", "difficulty": "string", "duration": "number" }` (Query params)
-       - **Response**: 
+       - **Response**:
          - Success (200 OK): `{ "status": "success", "data": { "courses": [{ "courseId": 1, "title": "Introduction to Python", "instructor": "Jane Smith", "rating": 4.5, "duration": 120, "category": "Programming", "coverImageUrl": "https://example.com/cover.jpg", "description": "Learn Python basics", "price": 49.99, "difficulty": "Beginner", "moduleCount": 3 }, { "courseId": 2, "title": "Advanced JavaScript", "instructor": "John Doe", "rating": 4.7, "duration": 180, "category": "Programming", "coverImageUrl": "https://example.com/cover2.jpg", "description": "Master JavaScript", "price": 79.99, "difficulty": "Advanced", "moduleCount": 4 }] }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (500 Internal Server Error): `{ "status": "error", "data": null, "error": { "errorCode": 500, "message": "Server error occurred" }, "timestamp": "2025-07-29T12:30:00Z" }`
      - `GET /api/courses/{id}/structure`
        - **Request**: (Requires Authorization header with JWT)
-       - **Response**: 
+       - **Response**:
          - Success (200 OK): `{ "status": "success", "data": { "courseId": 1, "title": "Introduction to Python", "modules": [{ "id": "mod_1", "title": "Module 1", "order": 1, "lessons": [{ "id": "les_1", "title": "Lesson 1", "type": "VIDEO", "url": "https://example.com/video1.mp4", "order": 1 }, { "id": "les_2", "title": "Lesson 2", "type": "PDF", "url": "https://example.com/doc1.pdf", "order": 2 }] }, { "id": "mod_2", "title": "Module 2", "order": 2, "lessons": [{ "id": "les_3", "title": "Lesson 3", "type": "QUIZ", "url": "https://example.com/quiz1", "order": 1 }] }] }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (404 Not Found): `{ "status": "error", "data": null, "error": { "errorCode": 404, "message": "Course not found" }, "timestamp": "2025-07-29T12:30:00Z" }`
    - **Dependencies**: File storage (e.g., AWS S3), media processing tools.
@@ -79,25 +81,25 @@ The backend is a distributed microservices architecture, ensuring separation of 
    - **Endpoints**:
      - `POST /api/payments/initiate`
        - **Request**: `{ "userId": "number", "courseId": "number", "amount": "number", "method": "string" (e.g., "card" or "paystack"), "cardDetails": { "number": "string", "expiryMonth": "string", "expiryYear": "string", "cvv": "string" } (for card method), "paystackEmail": "string" (for paystack method), "couponCode": "string" (optional), "promoCode": "string" (optional, from third-party or promo) }` (Requires Authorization header with JWT)
-       - **Response**: 
+       - **Response**:
          - Success (201 Created, Paystack with Coupon): `{ "status": "success", "data": { "paymentId": 1, "transactionId": "tx_123456789", "accessCode": "ac_123456789", "status": "pending", "message": "Payment initialized successfully with Paystack and coupon applied", "originalAmount": 5000, "discountedAmount": 4500, "currency": "NGN", "couponCode": "SAVE10", "promoCode": "PROMO2025" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Success (201 Created, Card): `{ "status": "success", "data": { "paymentId": 1, "transactionId": "tx_987654321", "status": "success", "message": "Card payment processed successfully", "amount": 5000, "currency": "NGN" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (400 Bad Request): `{ "status": "error", "data": null, "error": { "errorCode": 400, "message": "Invalid payment or coupon details" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (402 Payment Required): `{ "status": "error", "data": null, "error": { "errorCode": 402, "message": "Payment declined or invalid promo" }, "timestamp": "2025-07-29T12:30:00Z" }`
      - `GET /api/payments/status/{transactionId}`
        - **Request**: (Requires Authorization header with JWT)
-       - **Response**: 
+       - **Response**:
          - Success (200 OK, Paystack with Coupon): `{ "status": "success", "data": { "paymentId": 1, "transactionId": "tx_123456789", "status": "success", "originalAmount": 5000, "discountedAmount": 4500, "currency": "NGN", "paymentDate": "2025-07-29T12:30:00Z", "method": "paystack", "couponCode": "SAVE10", "promoCode": "PROMO2025" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Success (200 OK, Card): `{ "status": "success", "data": { "paymentId": 1, "transactionId": "tx_987654321", "status": "success", "amount": 5000, "currency": "NGN", "paymentDate": "2025-07-29T12:30:00Z", "method": "card" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (404 Not Found): `{ "status": "error", "data": null, "error": { "errorCode": 404, "message": "Transaction not found" }, "timestamp": "2025-07-29T12:30:00Z" }`
      - `POST /api/payments/validate-coupon`
        - **Request**: `{ "couponCode": "string", "courseId": "number" }` (Requires Authorization header with JWT)
-       - **Response**: 
+       - **Response**:
          - Success (200 OK): `{ "status": "success", "data": { "valid": true, "discountPercentage": 10, "message": "Coupon validated successfully" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (400 Bad Request): `{ "status": "error", "data": null, "error": { "errorCode": 400, "message": "Invalid coupon code" }, "timestamp": "2025-07-29T12:30:00Z" }`
      - `POST /api/payments/validate-promo`
        - **Request**: `{ "promoCode": "string", "courseId": "number" }` (Requires Authorization header with JWT)
-       - **Response**: 
+       - **Response**:
          - Success (200 OK): `{ "status": "success", "data": { "valid": true, "discountPercentage": 15, "message": "Promo validated successfully" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (400 Bad Request): `{ "status": "error", "data": null, "error": { "errorCode": 400, "message": "Invalid promo code" }, "timestamp": "2025-07-29T12:30:00Z" }`
    - **Dependencies**: Paystack API, card payment processor, Notification Service, third-party promo API.
@@ -112,12 +114,12 @@ The backend is a distributed microservices architecture, ensuring separation of 
    - **Endpoints**:
      - `POST /api/notifications/send`
        - **Request**: `{ "userId": "number", "type": "string", "message": "string" }` (Requires Authorization header with JWT)
-       - **Response**: 
+       - **Response**:
          - Success (201 Created): `{ "status": "success", "data": { "notificationId": 1, "message": "Notification sent successfully" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (400 Bad Request): `{ "status": "error", "data": null, "error": { "errorCode": 400, "message": "Invalid input data" }, "timestamp": "2025-07-29T12:30:00Z" }`
      - `GET /api/notifications/log`
        - **Request**: `{ "userId": "number" }` (Query param, Requires Authorization header with JWT)
-       - **Response**: 
+       - **Response**:
          - Success (200 OK): `{ "status": "success", "data": { "logs": [{ "logId": 1, "notificationId": 1, "deliveryStatus": "sent", "deliveredAt": "2025-07-29T12:30:00Z" }, { "logId": 2, "notificationId": 2, "deliveryStatus": "pending", "deliveredAt": null }] }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (404 Not Found): `{ "status": "error", "data": null, "error": { "errorCode": 404, "message": "No logs found" }, "timestamp": "2025-07-29T12:30:00Z" }`
    - **Dependencies**: SMTP server, push notification service (e.g., Firebase).
@@ -132,12 +134,12 @@ The backend is a distributed microservices architecture, ensuring separation of 
    - **Endpoints**:
      - `POST /api/certificates/generate`
        - **Request**: `{ "userId": "number", "courseId": "number" }` (Requires Authorization header with JWT and payment verification)
-       - **Response**: 
+       - **Response**:
          - Success (201 Created): `{ "status": "success", "data": { "certificateId": 1, "certificateUrl": "https://example.com/certificate.pdf", "message": "Certificate generated successfully" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (400 Bad Request): `{ "status": "error", "data": null, "error": { "errorCode": 400, "message": "Invalid input data or incomplete course" }, "timestamp": "2025-07-29T12:30:00Z" }`
      - `GET /api/certificates/{id}/download`
        - **Request**: (Requires Authorization header with JWT)
-       - **Response**: 
+       - **Response**:
          - Success (200 OK): File stream with headers `{ "Content-Type": "application/pdf", "Content-Disposition": "attachment; filename=certificate.pdf" }`
          - Error (404 Not Found): `{ "status": "error", "data": null, "error": { "errorCode": 404, "message": "Certificate not found" }, "timestamp": "2025-07-29T12:30:00Z" }`
    - **Dependencies**: Payment Service (for payment verification).
@@ -152,17 +154,17 @@ The backend is a distributed microservices architecture, ensuring separation of 
    - **Endpoints**:
      - `GET /api/analytics/courses`
        - **Request**: `{ "startDate": "string", "endDate": "string", "category": "string" }` (Query params, Requires Admin role)
-       - **Response**: 
+       - **Response**:
          - Success (200 OK): `{ "status": "success", "data": { "courses": [{ "courseId": 1, "title": "Introduction to Python", "popularity": 0.85, "enrollments": 150, "averageRating": 4.5, "couponUsage": 20 }, { "courseId": 2, "title": "Advanced JavaScript", "popularity": 0.92, "enrollments": 200, "averageRating": 4.7, "couponUsage": 15 }], "totalEnrollments": 350 }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (403 Forbidden): `{ "status": "error", "data": null, "error": { "errorCode": 403, "message": "Access denied" }, "timestamp": "2025-07-29T12:30:00Z" }`
      - `GET /api/analytics/users`
        - **Request**: `{ "startDate": "string", "endDate": "string", "role": "string" }` (Query params, Requires Admin role)
-       - **Response**: 
+       - **Response**:
          - Success (200 OK): `{ "status": "success", "data": { "users": [{ "userId": 1, "name": "John Doe", "progress": 0.75, "certificates": 2, "enrollments": 3 }, { "userId": 2, "name": "Jane Smith", "progress": 0.90, "certificates": 3, "enrollments": 4 }], "totalUsers": 500 }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (403 Forbidden): `{ "status": "error", "data": null, "error": { "errorCode": 403, "message": "Access denied" }, "timestamp": "2025-07-29T12:30:00Z" }`
      - `POST /api/analytics/report`
        - **Request**: `{ "type": "string" (e.g., "coursePopularity", "userProgress"), "parameters": { "startDate": "string", "endDate": "string" } }` (Requires Admin role)
-       - **Response**: 
+       - **Response**:
          - Success (201 Created): `{ "status": "success", "data": { "reportId": 1, "reportUrl": "https://example.com/report.pdf", "message": "Report generated successfully" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (400 Bad Request): `{ "status": "error", "data": null, "error": { "errorCode": 400, "message": "Invalid report type" }, "timestamp": "2025-07-29T12:30:00Z" }`
    - **Dependencies**: Data warehouse (e.g., Elasticsearch), visualization tools (e.g., Grafana).
@@ -177,12 +179,12 @@ The backend is a distributed microservices architecture, ensuring separation of 
    - **Endpoints**:
      - `GET /api/progress/{enrollmentId}`
        - **Request**: (Requires Authorization header with JWT)
-       - **Response**: 
+       - **Response**:
          - Success (200 OK): `{ "status": "success", "data": { "progressId": 1, "enrollmentId": 1, "moduleId": "mod_1", "lessonId": "les_2", "progress": 0.75, "lastAccessed": "2025-07-29T12:30:00Z", "timeSpent": 3600 }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (404 Not Found): `{ "status": "error", "data": null, "error": { "errorCode": 404, "message": "Progress not found" }, "timestamp": "2025-07-29T12:30:00Z" }`
      - `POST /api/progress/update`
        - **Request**: `{ "enrollmentId": "number", "moduleId": "string", "lessonId": "string", "progress": "number", "timeSpent": "number" }` (Requires Authorization header with JWT)
-       - **Response**: 
+       - **Response**:
          - Success (200 OK): `{ "status": "success", "data": { "progressId": 1, "message": "Progress updated successfully" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (400 Bad Request): `{ "status": "error", "data": null, "error": { "errorCode": 400, "message": "Invalid input data" }, "timestamp": "2025-07-29T12:30:00Z" }`
    - **Dependencies**: Enrollment Service.
@@ -198,13 +200,13 @@ The backend is a distributed microservices architecture, ensuring separation of 
    - **Endpoints**:
      - `POST /api/enrollments/enroll`
        - **Request**: `{ "courseId": "number", "userId": "number", "paymentId": "number" }` (Requires Authorization header with JWT)
-       - **Response**: 
+       - **Response**:
          - Success (201 Created): `{ "status": "success", "data": { "enrollmentId": 1, "message": "Enrollment successful" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (400 Bad Request): `{ "status": "error", "data": null, "error": { "errorCode": 400, "message": "Invalid input data" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (409 Conflict): `{ "status": "error", "data": null, "error": { "errorCode": 409, "message": "User already enrolled" }, "timestamp": "2025-07-29T12:30:00Z" }`
      - `GET /api/enrollments/{id}`
        - **Request**: (Requires Authorization header with JWT)
-       - **Response**: 
+       - **Response**:
          - Success (200 OK): `{ "status": "success", "data": { "enrollmentId": 1, "userId": 1, "courseId": 1, "enrollmentDate": "2025-07-29T12:30:00Z", "status": "in_progress", "progress": 0.75, "currentLessonId": "les_2" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (404 Not Found): `{ "status": "error", "data": null, "error": { "errorCode": 404, "message": "Enrollment not found" }, "timestamp": "2025-07-29T12:30:00Z" }`
    - **Dependencies**: Payment Service, Notification Service.
@@ -219,20 +221,46 @@ The backend is a distributed microservices architecture, ensuring separation of 
    - **Endpoints**:
      - `POST /api/peer-reviews/assign`
        - **Request**: `{ "courseId": "number", "moduleId": "string", "reviewerId": "number", "submitterId": "number" }` (Requires Authorization header with JWT)
-       - **Response**: 
+       - **Response**:
          - Success (201 Created): `{ "status": "success", "data": { "assignmentId": 1, "message": "Review assignment created successfully" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (400 Bad Request): `{ "status": "error", "data": null, "error": { "errorCode": 400, "message": "Invalid input data" }, "timestamp": "2025-07-29T12:30:00Z" }`
      - `POST /api/peer-reviews/submit`
        - **Request**: `{ "assignmentId": "number", "reviewerId": "number", "feedback": "string", "rating": "number" }` (Requires Authorization header with JWT)
-       - **Response**: 
+       - **Response**:
          - Success (200 OK): `{ "status": "success", "data": { "reviewId": 1, "message": "Review submitted successfully" }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (400 Bad Request): `{ "status": "error", "data": null, "error": { "errorCode": 400, "message": "Invalid input data" }, "timestamp": "2025-07-29T12:30:00Z" }`
      - `GET /api/peer-reviews/{submitterId}`
        - **Request**: (Requires Authorization header with JWT)
-       - **Response**: 
+       - **Response**:
          - Success (200 OK): `{ "status": "success", "data": { "reviews": [{ "reviewId": 1, "reviewerId": 2, "feedback": "Good effort!", "rating": 4.5, "submittedAt": "2025-07-29T12:30:00Z" }, { "reviewId": 2, "reviewerId": 3, "feedback": "Needs improvement", "rating": 3.0, "submittedAt": "2025-07-29T12:30:00Z" }], "averageRating": 3.75 }, "timestamp": "2025-07-29T12:30:00Z" }`
          - Error (404 Not Found): `{ "status": "error", "data": null, "error": { "errorCode": 404, "message": "No reviews found" }, "timestamp": "2025-07-29T12:30:00Z" }`
    - **Dependencies**: Enrollment Service, Notification Service.
+
+10. **Admin Service**
+    - **Purpose**: Provides administrative control over users, courses, and certificates.
+    - **Entities**: Users (for management), Courses, Certificates.
+    - **Responsibilities**:
+      - View, block, or unblock users and assign roles.
+      - Create, edit, or delete courses and upload media.
+      - Design certificate templates and manually issue/revoke certificates.
+    - **Endpoints**:
+      - `GET /api/admin/users` - List all users.
+      - `POST /api/admin/courses` - Create course.
+      - `POST /api/admin/certificates/issue` - Issue certificate manually.
+    - **Dependencies**: Auth Service (for role validation), Course Service, Certificate Service.
+
+11. **User Service**
+    - **Purpose**: Manages user profiles, preferences, and dashboard data.
+    - **Entities**: Users.
+    - **Responsibilities**:
+      - Retrieve and update user preferences.
+      - Display active/completed courses and progress stats.
+      - Facilitate certificate downloads and notification settings.
+    - **Endpoints**:
+      - `GET /api/user/dashboard` - Fetch user dashboard data.
+      - `PUT /api/user/preferences` - Update user preferences.
+      - `GET /api/user/certificates` - List downloadable certificates.
+    - **Dependencies**: Progress Service, Certificate Service, Notification Service.
 
 ## Database Schema
 The system utilizes a relational database with the following detailed entities and relationships, designed to support a clean and flexible course structure:
@@ -248,7 +276,7 @@ A course typically includes:
 
 ### 🧱 Entity Relationships (Conceptual)
 - **Course**
-  - **Attributes**: 
+  - **Attributes**:
     - `id` (String, Primary Key, UUID)
     - `title` (String)
     - `description` (String)
@@ -260,7 +288,7 @@ A course typically includes:
   - **Relationships**: Links to Modules, Enrollments, Certificates, Media Repository, Analytics, Peer Reviews.
 
 - **Module** (aka Section or Chapter)
-  - **Attributes**: 
+  - **Attributes**:
     - `id` (String, Primary Key, UUID)
     - `title` (String)
     - `courseId` (String, Foreign Key to Courses)
@@ -269,7 +297,7 @@ A course typically includes:
   - **Relationships**: Linked to Lessons, Courses.
 
 - **Lesson** (video, article, file, etc.)
-  - **Attributes**: 
+  - **Attributes**:
     - `id` (String, Primary Key, UUID)
     - `title` (String)
     - `type` (Enum: VIDEO, PDF, QUIZ, ARTICLE, LIVE_SESSION, CODE_SANDBOX, etc.)
@@ -280,7 +308,7 @@ A course typically includes:
   - **Relationships**: Linked to Modules.
 
 - **Users**
-  - **Attributes**: 
+  - **Attributes**:
     - `id` (String, Primary Key, UUID)
     - `name` (String)
     - `email` (String, Unique)
@@ -292,8 +320,18 @@ A course typically includes:
     - `updated_at` (DateTime)
   - **Relationships**: Links to User Accounts, Enrollments, Certificates, Payments, Notifications, Peer Reviews.
 
+- **User Accounts**
+  - **Attributes**:
+    - `account_id` (String, Primary Key, UUID)
+    - `user_id` (String, Foreign Key to Users, Links to user)
+    - `provider` (String, OAuth provider, e.g., Google)
+    - `provider_user_id` (String, External user ID)
+    - `access_token` (String, OAuth access token)
+    - `refresh_token` (String, Token for refresh)
+  - **Relationships**: Associated with a single User.
+
 - **Enrollment**
-  - **Attributes**: 
+  - **Attributes**:
     - `id` (String, Primary Key, UUID)
     - `userId` (String, Foreign Key to Users)
     - `courseId` (String, Foreign Key to Courses)
@@ -305,7 +343,7 @@ A course typically includes:
   - **Relationships**: Connects Users to Courses, links to Progress Tracking, Payments, Peer Reviews.
 
 - **Progress Tracking**
-  - **Attributes**: 
+  - **Attributes**:
     - `progress_id` (String, Primary Key, UUID)
     - `enrollment_id` (String, Foreign Key to Enrollments)
     - `module_id` (String, Foreign Key to Modules)
@@ -316,7 +354,7 @@ A course typically includes:
   - **Relationships**: Associated with Enrollments.
 
 - **Certificates**
-  - **Attributes**: 
+  - **Attributes**:
     - `certificate_id` (String, Primary Key, UUID)
     - `user_id` (String, Foreign Key to Users)
     - `course_id` (String, Foreign Key to Courses)
@@ -327,7 +365,7 @@ A course typically includes:
   - **Relationships**: Connects Users to Courses, requires Payments.
 
 - **Payment Gateway**
-  - **Attributes**: 
+  - **Attributes**:
     - `payment_id` (String, Primary Key, UUID)
     - `user_id` (String, Foreign Key to Users)
     - `course_id` (String, Foreign Key to Courses)
@@ -345,7 +383,7 @@ A course typically includes:
   - **Relationships**: Links to Users, Courses, Enrollments, Certificates, Notifications, Analytics.
 
 - **Coupons**
-  - **Attributes**: 
+  - **Attributes**:
     - `coupon_id` (String, Primary Key, UUID)
     - `code` (String, Unique)
     - `discount_percentage` (Decimal(5,2))
@@ -356,7 +394,7 @@ A course typically includes:
   - **Relationships**: Linked to Courses, Payments.
 
 - **Notifications**
-  - **Attributes**: 
+  - **Attributes**:
     - `notification_id` (String, Primary Key, UUID)
     - `user_id` (String, Foreign Key to Users)
     - `type` (Enum: email, in_app, push)
@@ -366,7 +404,7 @@ A course typically includes:
   - **Relationships**: Links to Notification Log, Users.
 
 - **Notification Log**
-  - **Attributes**: 
+  - **Attributes**:
     - `log_id` (String, Primary Key, UUID)
     - `notification_id` (String, Foreign Key to Notifications)
     - `delivery_status` (String)
@@ -374,7 +412,7 @@ A course typically includes:
   - **Relationships**: Associated with Notifications.
 
 - **Media Repository**
-  - **Attributes**: 
+  - **Attributes**:
     - `media_id` (String, Primary Key, UUID)
     - `course_id` (String, Foreign Key to Courses)
     - `instructor_id` (String, Foreign Key to Users)
@@ -385,7 +423,7 @@ A course typically includes:
   - **Relationships**: Linked to Courses and Users (instructors), with `index` enabling ordered retrieval by upload time.
 
 - **Analytics**
-  - **Attributes**: 
+  - **Attributes**:
     - `analytic_id` (String, Primary Key, UUID)
     - `course_id` (String, Foreign Key to Courses)
     - `user_id` (String, Foreign Key to Users)
@@ -395,7 +433,7 @@ A course typically includes:
   - **Relationships**: Optionally linked to Courses, Users, Payments.
 
 - **Analytics Reports**
-  - **Attributes**: 
+  - **Attributes**:
     - `report_id` (String, Primary Key, UUID)
     - `type` (String, e.g., "coursePopularity", "userProgress")
     - `parameters` (JSON, e.g., {"startDate": "2025-07-01", "endDate": "2025-07-29"})
@@ -404,7 +442,7 @@ A course typically includes:
   - **Relationships**: Associated with Analytics data.
 
 - **Peer Reviews**
-  - **Attributes**: 
+  - **Attributes**:
     - `review_id` (String, Primary Key, UUID)
     - `assignment_id` (String, Foreign Key to Review Assignments)
     - `reviewer_id` (String, Foreign Key to Users)
@@ -414,7 +452,7 @@ A course typically includes:
   - **Relationships**: Links to Review Assignments, Users.
 
 - **Review Assignments**
-  - **Attributes**: 
+  - **Attributes**:
     - `assignment_id` (String, Primary Key, UUID)
     - `course_id` (String, Foreign Key to Courses)
     - `module_id` (String, Foreign Key to Modules)
@@ -423,6 +461,29 @@ A course typically includes:
     - `assigned_at` (DateTime)
     - `status` (String, e.g., "pending", "completed")
   - **Relationships**: Connects Courses, Modules, and Users for peer review tasks.
+
+### 🧭 Ordering the Videos
+Ordering is handled using the `order` field in both `Module` and `Lesson`. So:
+- Module 1 → Lesson 1, 2, 3...
+- Module 2 → Lesson 1, 2, 3...
+
+NestJS should sort by `order` when querying.
+```ts
+// Get lessons in a course
+await this.prisma.course.findUnique({
+  where: { id: courseId },
+  include: {
+    modules: {
+      orderBy: { order: 'asc' },
+      include: {
+        lessons: {
+          orderBy: { order: 'asc' }
+        }
+      }
+    }
+  }
+});
+```
 
 ### 🔁 Example NestJS + Prisma Schema
 ```prisma
@@ -513,29 +574,6 @@ enum LessonType {
   LIVE_SESSION
   CODE_SANDBOX
 }
-```
-
-### 🧭 Ordering the Videos
-Ordering is handled using the `order` field in both `Module` and `Lesson`. So:
-- Module 1 → Lesson 1, 2, 3...
-- Module 2 → Lesson 1, 2, 3...
-
-NestJS should sort by `order` when querying.
-```ts
-// Get lessons in a course
-await this.prisma.course.findUnique({
-  where: { id: courseId },
-  include: {
-    modules: {
-      orderBy: { order: 'asc' },
-      include: {
-        lessons: {
-          orderBy: { order: 'asc' }
-        }
-      }
-    }
-  }
-});
 ```
 
 ### 🛡 Tips for Long-Term Flexibility
