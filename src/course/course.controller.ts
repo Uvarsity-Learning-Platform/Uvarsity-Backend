@@ -6,12 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-@Controller('course')
+@Controller('courses')
 export class CourseController {
   constructor(private readonly courseService: CourseService) {}
 
@@ -28,6 +31,12 @@ export class CourseController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.courseService.findOne(+id);
+  }
+
+  @Get(':id/structure')
+  @UseGuards(JwtAuthGuard)
+  getStructure(@Param('id', ParseUUIDPipe) id: string) {
+    return this.courseService.getStructure(id);
   }
 
   // @Patch(':id')
