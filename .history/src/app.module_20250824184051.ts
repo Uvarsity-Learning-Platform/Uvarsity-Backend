@@ -60,12 +60,6 @@ import {
     NotificationModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
-  ],
+  providers: [AppService],
 })
 export class AppModule {}

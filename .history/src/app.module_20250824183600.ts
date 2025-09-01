@@ -9,8 +9,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { MediaModule } from './media/media.module';
 import { NotificationModule } from './notification/notification.module';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule } from '@nestjs/throttler';
 import {
   configValidationSchema,
   databaseConfig,
@@ -60,12 +59,6 @@ import {
     NotificationModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
-  ],
+  providers: [AppService],
 })
 export class AppModule {}

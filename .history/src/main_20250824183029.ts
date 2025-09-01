@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
 import * as compression from 'compression';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

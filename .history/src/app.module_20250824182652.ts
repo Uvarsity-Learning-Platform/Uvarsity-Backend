@@ -5,12 +5,10 @@ import { DatabaseModule } from './database/database.module';
 import { UserModule } from './user/user.module';
 import { CourseModule } from './course/course.module';
 import { AuthModule } from './auth/auth.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { MediaModule } from './media/media.module';
 import { NotificationModule } from './notification/notification.module';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
 import {
   configValidationSchema,
   databaseConfig,
@@ -39,18 +37,6 @@ import {
         uploadConfig,
       ],
     }),
-    ThrottlerModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        throttlers: [
-          {
-            ttl: configService.get<number>('security.rateLimitTtl') || 60000,
-            limit: configService.get<number>('security.rateLimitLimit') || 100,
-          },
-        ],
-      }),
-    }),
     DatabaseModule,
     UserModule,
     CourseModule,
@@ -60,12 +46,6 @@ import {
     NotificationModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
-  ],
+  providers: [AppService],
 })
 export class AppModule {}
