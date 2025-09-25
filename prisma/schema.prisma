@@ -25,6 +25,7 @@ model User {
   isActive     Boolean  @default(true) @map("is_active") // Soft delete flag
   emailVerified Boolean @default(false) @map("email_verified") // Email verification status
   lastLoginAt DateTime? @map("last_login_at") // Track user activity
+  username    String   @unique 
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
@@ -62,6 +63,7 @@ model Course {
   instructorId  String        @map("instructor_id") // Creator of the course
   price         Decimal       @default(0) @db.Decimal(10, 2) // Course price
   currency      String        @default("USD") @db.VarChar(3) // Currency code
+  rating         Float?
   status        CourseStatus  @default(DRAFT) // Publication status
   difficulty    String?       @db.VarChar(50) // Beginner, Intermediate, Advanced
   estimatedHours Int?         @map("estimated_hours") // Estimated completion time

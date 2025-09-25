@@ -1,4 +1,3 @@
-import { Type } from 'class-transformer';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CourseCatalogQueryDto {
@@ -10,8 +9,7 @@ export class CourseCatalogQueryDto {
   @IsOptional()
   difficulty?: string;
 
-  @Type(() => Number)
-  @IsNumber({}, { message: 'Duration must be a number' })
+  @IsNumber({, {message})
   @IsOptional()
   duration?: number;
 }

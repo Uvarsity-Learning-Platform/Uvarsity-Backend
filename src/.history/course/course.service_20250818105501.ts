@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-// import { CreateCourseDto } from './dto/create-course.dto';
-// import { UpdateCourseDto } from './dto/update-course.dto';
+import { CreateCourseDto } from './dto/create-course.dto';
+import { UpdateCourseDto } from './dto/update-course.dto';
 import { DatabaseService } from 'src/database/database.service';
+import Datab
 import { CourseCatalogQueryDto } from './dto/get-catalog.dto';
 import { CourseFilterDto } from './dto/course-filter.dto';
 import { CourseStatus } from 'generated/prisma';
