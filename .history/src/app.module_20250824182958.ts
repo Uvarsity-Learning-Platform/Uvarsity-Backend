@@ -9,8 +9,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { MediaModule } from './media/media.module';
 import { NotificationModule } from './notification/notification.module';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule } from '@nestjs/throttler';
 import {
   configValidationSchema,
   databaseConfig,
@@ -39,18 +38,6 @@ import {
         uploadConfig,
       ],
     }),
-    ThrottlerModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        throttlers: [
-          {
-            ttl: configService.get<number>('security.rateLimitTtl') || 60000,
-            limit: configService.get<number>('security.rateLimitLimit') || 100,
-          },
-        ],
-      }),
-    }),
     DatabaseModule,
     UserModule,
     CourseModule,
@@ -60,12 +47,6 @@ import {
     NotificationModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
-  ],
+  providers: [AppService],
 })
 export class AppModule {}

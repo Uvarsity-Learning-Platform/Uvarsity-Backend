@@ -3,33 +3,40 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
+import { Request } from 'express';
 
-export interface JwtPayload {
+export interface JwtRefreshPayload {
   sub: string;
   email: string;
-  role: string;
   iat: number;
   exp: number;
 }
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   constructor(
     private readonly configService: ConfigService,
     private readonly databaseService: DatabaseService,
   ) {
-    const jwtSecret = configService.get<string>('jwt.secret');
-    if (!jwtSecret) {
-      throw new Error('JWT_SECRET is not defined');
+    const jwtRefreshSecret = configService.get<string>('jwt.refreshSecret');
+    if (!jwtRefreshSecret) {
+      throw new Error('JWT_REFRESH_SECRET is not defined');
     }
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: jwtSecret,
+      secretOrKey: jwtRefreshSecret,
+      passReqToCallback: true,
     });
   }
 
-  async validate(payload: JwtPayload) {
+  async validate(req: Request, payload: JwtRefreshPayload) {
+    const refreshToken = req.get('Authorization')?.replace('Bearer', '').trim();
+    
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token not found');
+    }
+
     const user = await this.databaseService.user.findUnique({
       where: { id: payload.sub },
       select: {
@@ -50,6 +57,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       email: user.email,
       role: user.role,
       isEmailVerified: user.emailVerified,
+      refreshToken,
     };
   }
 }
