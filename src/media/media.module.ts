@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MediaController } from './controllers/media.controller';
 import { MediaService } from './services/media.service';
-import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
-import { DatabaseModule } from 'src/database/database.module';
+import { CloudinaryModule } from '../cloudinary/cloudinary.module';
+import { DatabaseModule } from '../database/database.module';
 
 /**
  * MediaModule - Main module for handling media operations in the application

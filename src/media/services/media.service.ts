@@ -4,10 +4,10 @@ import {
   ForbiddenException,
   Logger,
 } from '@nestjs/common';
-import { DatabaseService } from 'src/database/database.service';
-import { MediaProcessingService } from 'src/cloudinary/services/media-processing/media-processing.service';
-import { CloudinaryService } from 'src/cloudinary/services/cloudinary/cloudinary.service';
-import { MediaType } from 'generated/prisma';
+import { DatabaseService } from '../../database/database.service';
+import { MediaProcessingService } from '../../cloudinary/services/media-processing/media-processing.service';
+import { CloudinaryService } from '../../cloudinary/services/cloudinary/cloudinary.service';
+import { MediaType } from '../../../generated/prisma';
 
 /**
  * MediaService - Business logic layer for media management
@@ -255,7 +255,7 @@ export class MediaService {
       });
 
       // Step 5: Transform data for response
-      const transformedMedia = mediaFiles.map((media) => ({
+      const transformedMedia = mediaFiles.map((media: { id: any; fileName: any; url: any; thumbnailUrl: any; mediaType: any; fileSize: any; duration: any; resolution: any; uploadIndex: any; uploadedAt: any; uploader: any; }) => ({
         id: media.id,
         fileName: media.fileName,
         url: media.url,
@@ -388,7 +388,7 @@ export class MediaService {
         take: Math.min(limit, 50), // Max 50 files
       });
 
-      return mediaFiles.map((media) => ({
+      return mediaFiles.map((media: { id: any; fileName: any; url: any; thumbnailUrl: any; mediaType: any; fileSize: any; uploadedAt: any; course: any; }) => ({
         id: media.id,
         fileName: media.fileName,
         url: media.url,
