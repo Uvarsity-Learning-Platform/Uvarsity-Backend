@@ -1,7 +1,9 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
-import { MediaType } from 'generated/prisma';
+import { MediaType } from '../../../../generated/prisma';
 import * as sharp from 'sharp';
+import { Express } from 'express';
+
 
 /**
  * MediaProcessingService - Handles file processing before and after Cloudinary upload
@@ -28,9 +30,9 @@ export class MediaProcessingService {
    * @returns Processed file information for database storage
    */
   async processAndUploadMedia(
-    file: Express.Multer.File,
-    courseId: string,
-    uploaderId: string,
+  file: Express.Multer.File,
+  courseId: string,
+  uploaderId: string,
   ): Promise<{
     url: string;
     publicId: string;

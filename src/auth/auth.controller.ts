@@ -159,15 +159,19 @@ export class AuthController {
         throw new UnauthorizedException('User not authenticated');
       }
 
-      const updatedUser = await this.authService.updateUserProfile(
+      const result = await this.authService.updateUserProfile(
         userId,
         updateUserProfile,
       );
 
+      // support both shapes: { message, user } or direct user object
+      const updatedUser = result && (result as any).user ? (result as any).user : (result as any);
+      const returnedUserId = updatedUser?.id ?? updatedUser?.userId ?? userId;
+
       return response.status(HttpStatus.OK).json({
         status: 'success',
         data: {
-          userId: updatedUser.id,
+          userId: returnedUserId,
           message: 'Profile updated successfully',
         },
         timestamp: new Date().toISOString(),

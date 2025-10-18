@@ -1,23 +1,43 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-// import { CreateCourseDto } from './dto/create-course.dto';
-// import { UpdateCourseDto } from './dto/update-course.dto';
-import { DatabaseService } from 'src/database/database.service';
+import { DatabaseService } from '../database/database.service';
 import { CourseCatalogQueryDto } from './dto/get-catalog.dto';
 import { CourseFilterDto } from './dto/course-filter.dto';
-import { CourseStatus } from 'generated/prisma';
+import { CourseStatus } from '../../generated/prisma';
+
+export interface CourseModule {
+  id: string;
+  title: string;
+}
+
+export interface FilteredCourse {
+  courseId: string;
+  title: string;
+  instructor: string;
+  rating: number;
+  category: string;
+  coverImageUrl: string;
+  description: string;
+  price: number;
+  difficulty: string;
+  moduleCount: number;
+  modules: CourseModule[];
+}
 
 @Injectable()
 export class CourseService {
   constructor(private readonly databaseService: DatabaseService) {}
 
+  /**
+   * Get all published and active courses (basic catalog)
+   */
   async getCatalog(filters: CourseCatalogQueryDto) {
     const courses = await this.databaseService.course.findMany({
       where: {
         isActive: true,
+        status: 'PUBLISHED',
         ...(filters.category && { category: filters.category }),
         ...(filters.difficulty && { difficulty: filters.difficulty }),
         ...(filters.duration && { estimatedHours: { lte: filters.duration } }),
-        status: 'PUBLISHED',
       },
       select: {
         id: true,
@@ -28,12 +48,8 @@ export class CourseService {
         difficulty: true,
         estimatedHours: true,
         thumbnailUrl: true,
-        instructor: {
-          select: { name: true },
-        },
-        modules: {
-          select: { id: true },
-        },
+        instructor: { select: { name: true } },
+        modules: { select: { id: true } },
       },
     });
 
@@ -58,7 +74,7 @@ export class CourseService {
   }
 
   /**
-   * Get full course structure by ID
+   * Get full course structure (modules + lessons)
    */
   async getStructure(courseId: string) {
     const course = await this.databaseService.course.findUnique({
@@ -75,9 +91,7 @@ export class CourseService {
       },
     });
 
-    if (!course) {
-      throw new NotFoundException('Course not found');
-    }
+    if (!course) throw new NotFoundException('Course not found');
 
     return {
       status: 'success',
@@ -102,51 +116,45 @@ export class CourseService {
   }
 
   /**
-   * Get filtered course catalog based on various criteria
+   * Get filtered catalog by category, difficulty, or duration
    */
-  async getFilteredCatalog(filterDto: CourseFilterDto) {
+  async getFilteredCatalog(filterDto: CourseFilterDto): Promise<FilteredCourse[]> {
     const { category, difficulty, duration } = filterDto;
-
     const where: {
       category?: string;
       difficulty?: string;
       estimatedHours?: { lte: number };
       isActive?: boolean;
-      status?: string;
-    } = {};
+      status?: CourseStatus;
+    } = {
+      isActive: true,
+      status: CourseStatus.PUBLISHED,
+    };
 
     if (category) where.category = category;
     if (difficulty) where.difficulty = difficulty;
-    if (duration) where.estimatedHours = { lte: Number(duration) };
+    if (duration) where.estimatedHours = { lte: duration };
 
     const courses = await this.databaseService.course.findMany({
-      where: {
-        isActive: true,
-        status: 'PUBLISHED' as any,
-        ...where,
-      },
+      where,
       include: {
-        instructor: {
-          select: { name: true },
-        },
-        modules: {
-          select: { id: true, title: true },
-        },
+        instructor: true,
+        modules: { select: { id: true, title: true } },
       },
     });
 
-    return courses.map((course) => ({
+    return courses.map((course): FilteredCourse => ({
       courseId: course.id,
       title: course.title,
       instructor: course.instructor.name,
-      rating: course.rating,
+      rating: course.rating ?? 0,
       category: course.category,
-      coverImageUrl: course.thumbnailUrl,
+      coverImageUrl: course.thumbnailUrl ?? '',
       description: course.description,
-      price: course.price,
-      difficulty: course.difficulty,
+      price: course.price?.toNumber() ?? 0,
+      difficulty: course.difficulty ?? '',
       moduleCount: course.modules.length,
-      modules: course.modules.map((module) => ({
+      modules: course.modules.map((module): CourseModule => ({
         id: module.id,
         title: module.title,
       })),
