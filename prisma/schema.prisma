@@ -28,6 +28,13 @@ model User {
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
+  // New fields for enhanced security and recovery
+  emailVerificationToken   String?   @unique
+  emailTokenExpiry        DateTime?
+  passwordResetToken      String?   @unique
+  passwordResetExpiry     DateTime?
+  tokenVersion            Int       @default(0)
+
   // Relationships
   coursesCreated    Course[]           @relation("CourseInstructor") // Courses created by instructor
   enrollments       Enrollment[]       // Courses user is enrolled in
@@ -58,6 +65,7 @@ model Course {
   id            String        @id @default(uuid())
   title         String        @db.VarChar(255) // Course title
   description   String        @db.Text // Detailed course description
+  shortDescription  String?   @db.Text
   category      String        @db.VarChar(100) // Course category for filtering
   instructorId  String        @map("instructor_id") // Creator of the course
   price         Decimal       @default(0) @db.Decimal(10, 2) // Course price
@@ -70,6 +78,10 @@ model Course {
   isActive      Boolean       @default(true) @map("is_active") // Soft delete
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @updatedAt @map("updated_at")
+  isPublished   Boolean       @default(false)
+  level         CourseLevel        @default(BEGINNER)
+  tags               String[]    @default([])        
+  learningObjectives String[]    @default([])
 
   // Relationships
   instructor       User              @relation("CourseInstructor", fields: [instructorId], references: [id], onDelete: Cascade)
@@ -95,6 +107,13 @@ enum CourseStatus {
   DRAFT     // Being created
   PUBLISHED // Available for enrollment
   ARCHIVED  // No longer available
+}
+
+//Course level
+enum CourseLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
 }
 
 // Module/Section - groups lessons together
@@ -129,9 +148,11 @@ enum ModuleStatus {
 model Lesson {
   id          String     @id @default(uuid())
   title       String     @db.VarChar(255) // Lesson title
+  description     String?      @db.Text // Detailed lesson description
+  shortDescription String?     @map("short_description") @db.VarChar(500) // Brief lesson summary
   type        LessonType // Type of content
   content     String?    @db.Text // Text content for articles
-  url         String?    @db.VarChar(500) // External URL or file path
+  videoUrl    String?    @db.VarChar(500) // External URL or file path
   moduleId    String     @map("module_id") // Parent module
   order       Int        // Display order within module
   duration    Int?       // Estimated duration in minutes
@@ -153,12 +174,13 @@ model Lesson {
 // Types of lesson content
 enum LessonType {
   VIDEO        // Video content
-  ARTICLE      // Text-based article
+  TEXT     // Text-based article
   PDF          // PDF document
   QUIZ         // Assessment/quiz
   LIVE_SESSION // Live webinar/session
   CODE_SANDBOX // Interactive coding environment
   ASSIGNMENT   // Student assignment
+  DOCUMENT
 }
 
 // Lesson publication status
