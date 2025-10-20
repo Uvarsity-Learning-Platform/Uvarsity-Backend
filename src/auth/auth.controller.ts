@@ -200,4 +200,113 @@ export class AuthController {
       timestamp: new Date().toISOString(),
     });
   }
+
+  @Post('refresh-token')
+  async refreshToken(@Body('refreshToken') refreshToken: string, @Res() response: Response) {
+    try {
+      const result = await this.authService.refreshToken(refreshToken);
+      
+      return response.status(HttpStatus.OK).json({
+        status: 'success',
+        data: {
+          accessToken: result.accessToken,
+          refreshToken: result.refreshToken,
+          message: 'Token refreshed successfully',
+        },
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      return response.status(HttpStatus.UNAUTHORIZED).json({
+        status: 'error',
+        data: null,
+        error: {
+          errorCode: 401,
+          message: 'Invalid refresh token',
+        },
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }
+
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  async logout(@Req() request: Request, @Res() response: Response) {
+    try {
+      const userId = (request.user as { userId: string }).userId;
+      
+      // Optionally invalidate refresh tokens in database
+      await this.authService.logout(userId);
+      
+      return response.status(HttpStatus.OK).json({
+        status: 'success',
+        data: {
+          message: 'Logged out successfully',
+        },
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        status: 'error',
+        data: null,
+        error: {
+          errorCode: 500,
+          message: 'Logout failed',
+        },
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body('email') email: string, @Res() response: Response) {
+    try {
+      await this.authService.forgotPassword(email);
+      
+      return response.status(HttpStatus.OK).json({
+        status: 'success',
+        data: {
+          message: 'Password reset email sent',
+        },
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      return response.status(HttpStatus.BAD_REQUEST).json({
+        status: 'error',
+        data: null,
+        error: {
+          errorCode: 400,
+          message: error.message || 'Failed to send reset email',
+        },
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }
+
+  @Post('reset-password')
+  async resetPassword(
+    @Body() resetData: { token: string; newPassword: string },
+    @Res() response: Response,
+  ) {
+    try {
+      await this.authService.resetPassword(resetData.token, resetData.newPassword);
+      
+      return response.status(HttpStatus.OK).json({
+        status: 'success',
+        data: {
+          message: 'Password reset successfully',
+        },
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      return response.status(HttpStatus.BAD_REQUEST).json({
+        status: 'error',
+        data: null,
+        error: {
+          errorCode: 400,
+          message: error.message || 'Password reset failed',
+        },
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }
 }

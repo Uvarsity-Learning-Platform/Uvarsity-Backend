@@ -38,6 +38,13 @@ export class MediaService {
    * @param uploaderId - ID of the user uploading the file
    * @returns Media record with database ID and file information
    */
+  async uploadFile(
+    file: Express.Multer.File,
+    courseId: string,
+    uploaderId: string,
+  ) {
+    return this.uploadMedia(file, courseId, uploaderId);
+  }
   async uploadMedia(
     file: Express.Multer.File,
     courseId: string,
