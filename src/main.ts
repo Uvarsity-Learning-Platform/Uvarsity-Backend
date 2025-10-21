@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
 import * as compression from 'compression';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
+import * as express from 'express'; // <-- added
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,7 +19,7 @@ async function bootstrap() {
   // CORS configuration
   app.enableCors({
     origin: process.env.NODE_ENV === 'production'
-      ? ['https://yourdomain.com'] // Replace with your frontend domain
+      ? ['https://stellr-learning-platform.vercel.app/'] // Replace with your frontend domain
       : true,
     credentials: true,
   });
@@ -40,6 +41,9 @@ async function bootstrap() {
 
   // API prefix
   app.setGlobalPrefix('api/v1');
+
+  // ensure raw body for Stripe webhook route BEFORE listen
+  app.use('/payments/webhook', express.raw({ type: 'application/json' }));
 
   const port = configService.get<number>('server.port') || 4000;
   await app.listen(port);
