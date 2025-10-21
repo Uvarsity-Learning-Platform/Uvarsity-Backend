@@ -293,6 +293,8 @@ model Payment {
   paymentGatewayRef String?       @map("payment_gateway_ref") @db.VarChar(255) // Gateway reference
   failureReason     String?       @map("failure_reason") @db.Text // Failure details
   metadata          Json?         // Additional payment data
+  provider          String
+  providerId        String?
 
   // Relationships
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)

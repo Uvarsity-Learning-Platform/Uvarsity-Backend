@@ -6,6 +6,7 @@ import { UserModule } from './user/user.module';
 import { CourseModule } from './course/course.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { PaymentsModule } from './payments/payments.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { MediaModule } from './media/media.module';
 import { NotificationModule } from './notification/notification.module';
@@ -22,9 +23,12 @@ import {
   securityConfig,
   uploadConfig,
 } from './config/configuration';
+import { StripeService } from './payments/stripe.service';
+import { StripeController } from './payments/stripe.controller';
 
 @Module({
   imports: [
+    PaymentsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: configValidationSchema,
@@ -59,13 +63,14 @@ import {
     MediaModule,
     NotificationModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, StripeController],
   providers: [
     AppService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
+    StripeService,
   ],
 })
 export class AppModule {}
