@@ -28,21 +28,19 @@ import { PaystackController } from './payments/paystack.controller';
 
 @Module({
   imports: [
-    PaymentsModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      validationSchema: configValidationSchema,
-      load: [
-        databaseConfig,
-        jwtConfig,
-        serverConfig,
-        cloudinaryConfig,
-        redisConfig,
-        emailConfig,
-        securityConfig,
-        uploadConfig,
-      ],
+      envFilePath: '.env',
+      cache: true,
     }),
+    DatabaseModule,
+    UserModule,
+    CourseModule,
+    AuthModule,
+    CloudinaryModule,
+    MediaModule,
+    NotificationModule,
+    PaymentsModule,
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -55,13 +53,6 @@ import { PaystackController } from './payments/paystack.controller';
         ],
       }),
     }),
-    DatabaseModule,
-    UserModule,
-    CourseModule,
-    AuthModule,
-    CloudinaryModule,
-    MediaModule,
-    NotificationModule,
   ],
   controllers: [AppController, PaystackController],
   providers: [

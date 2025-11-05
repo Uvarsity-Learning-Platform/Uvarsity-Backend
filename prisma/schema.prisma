@@ -1,11 +1,8 @@
-// This is your Prisma schema file
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  
 }
 
 datasource db {
@@ -552,4 +549,17 @@ enum ReviewAssignmentStatus {
   COMPLETED  // Review completed
   OVERDUE    // Past due date 
   CANCELLED  // Assignment cancelled
+}
+
+model WebhookEvent {
+  id        String      @id @default(cuid())
+  createdAt DateTime @default(now())
+  provider  String
+  eventHash String   @unique
+  payload   String   // raw JSON payload for debugging
+  status    String   // PROCESSING | PROCESSED | FAILED
+  error     String?
+
+  @@index([provider])
+  @@index([status])
 }

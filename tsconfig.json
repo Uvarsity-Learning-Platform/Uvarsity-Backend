@@ -16,6 +16,6 @@
     "noImplicitAny": true,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "types": []
+    "types": ["node"]
   }
 }
