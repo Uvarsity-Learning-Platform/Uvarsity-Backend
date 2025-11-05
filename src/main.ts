@@ -3,9 +3,9 @@ import { AppModule } from './app.module';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
-import * as compression from 'compression';
+const compression = require('compression'); 
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
-import * as express from 'express'; // <-- added
+import * as express from 'express'; 
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,7 +19,7 @@ async function bootstrap() {
   // CORS configuration
   app.enableCors({
     origin: process.env.NODE_ENV === 'production'
-      ? ['https://stellr-learning-platform.vercel.app/'] // Replace with your frontend domain
+      ? ['https://stellr-learning-platform.vercel.app/']
       : true,
     credentials: true,
   });
@@ -42,13 +42,13 @@ async function bootstrap() {
   // API prefix
   app.setGlobalPrefix('api/v1');
 
-  // ensure raw body for Stripe webhook route BEFORE listen
-  app.use('/payments/webhook', express.raw({ type: 'application/json' }));
+  // ensure raw body for Paystack webhook route BEFORE listen
+  // mount on the prefixed path so express.raw runs for /api/v1/payments/webhook
+  app.use('/api/v1/payments/webhook', express.raw({ type: 'application/json' }));
 
-  const port = configService.get<number>('server.port') || 4000;
+  const port = configService.get<number>('PORT') || parseInt(process.env.PORT || '4000', 10);
   await app.listen(port);
-
   logger.log(`Application is running on: http://localhost:${port}`);
-  logger.log(`Environment: ${configService.get<string>('server.nodeEnv')}`);
+  logger.log(`Environment: ${configService.get<string>('NODE_ENV') || process.env.NODE_ENV}`);
 }
 bootstrap();

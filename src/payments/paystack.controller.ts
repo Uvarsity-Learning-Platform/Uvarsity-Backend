@@ -2,14 +2,13 @@ import { Controller, Post, Body, Req, Res, HttpCode } from '@nestjs/common';
 import { PaystackService } from './paystack.service';
 import { ConfigService } from '@nestjs/config';
 import { Request, Response } from 'express';
-import { OrdersService } from '../orders/orders.service'; // Adjust path as needed
+
 
 @Controller('payments')
 export class PaystackController {
   constructor(
     private readonly paystackService: PaystackService,
     private readonly configService: ConfigService,
-    private readonly ordersService: OrdersService, // Inject your service
   ) {}
 
   @Post('initialize')
@@ -30,12 +29,10 @@ export class PaystackController {
 
     if (event.event === 'charge.success') {
       const reference = event.data.reference;
-      // Update order/payment status in your database
-      await this.ordersService.markAsPaid(reference, event.data.amount);
+    
     }
     if (event.event === 'charge.failed') {
       const reference = event.data.reference;
-      await this.ordersService.markAsFailed(reference);
     }
 
     res.sendStatus(200);
