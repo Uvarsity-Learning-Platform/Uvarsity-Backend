@@ -23,8 +23,8 @@ import {
   securityConfig,
   uploadConfig,
 } from './config/configuration';
-import { StripeService } from './payments/stripe.service';
-import { StripeController } from './payments/stripe.controller';
+import { PaystackService } from './payments/paystack.service';
+import { PaystackController } from './payments/paystack.controller';
 
 @Module({
   imports: [
@@ -63,14 +63,14 @@ import { StripeController } from './payments/stripe.controller';
     MediaModule,
     NotificationModule,
   ],
-  controllers: [AppController, StripeController],
+  controllers: [AppController, PaystackController],
   providers: [
     AppService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
-    StripeService,
+    PaystackService,
   ],
 })
 export class AppModule {}
