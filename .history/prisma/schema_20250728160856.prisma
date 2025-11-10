@@ -1,0 +1,186 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+// ===================== ENUMS =====================
+
+enum Role {
+  student
+  admin
+  instructor
+}
+
+enum NotificationType {
+  email
+  in_app
+  push
+}
+
+enum MediaType {
+  video
+  image
+  document
+}
+
+// ===================== MODELS =====================
+
+model User {
+  user_id      String         @id @default(uuid()) @db.Uuid
+  username     String         @unique
+  email        String         @unique
+  phone        String?
+  password     String         @map("password_hash")
+  role         Role
+  name         String
+  avatarUrl    String?        @map("avatar_url")
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+
+  // Relations
+  accounts           UserAccount[]
+  enrollments        Enrollment[]
+  certificates       Certificate[]
+  payments           Payment[]
+  notifications      Notification[]
+  instructedCourses  Course[]        @relation("InstructorCourses")
+  analytics          Analytic[]      @relation("UserAnalytics")
+}
+
+model UserAccount {
+  account_id     String   @id @default(uuid()) @db.Uuid
+  user           User     @relation(fields: [user_id], references: [user_id])
+  user_id        String   @db.Uuid
+  provider       String
+  providerUserId String   @map("provider_user_id")
+  accessToken    String
+  refreshToken   String
+}
+
+model Course {
+  course_id       String              @id @default(uuid()) @db.Uuid
+  title           String
+  instructor      User                @relation("InstructorCourses", fields: [instructor_id], references: [user_id])
+  instructor_id   String              @db.Uuid
+  rating          Float?
+  duration        Int
+  category        String
+  coverImageUrl   String?             @map("cover_image_url")
+  description     String
+  price           Decimal
+  difficulty      String
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  // Relations
+  catalog         CourseCatalog?
+  enrollments     Enrollment[]
+  certificates    Certificate[]
+  media           MediaRepository[]
+  analytics       Analytic[]
+  payments        Payment[]           @relation("CoursePayments")
+}
+
+model CourseCatalog {
+  catalog_id   String   @id @default(uuid()) @db.Uuid
+  course       Course   @relation(fields: [course_id], references: [course_id])
+  course_id    String   @unique @db.Uuid
+  isActive     Boolean  @map("is_active")
+}
+
+model Enrollment {
+  enrollment_id   String             @id @default(uuid()) @db.Uuid
+  user            User               @relation(fields: [user_id], references: [user_id])
+  user_id         String             @db.Uuid
+  course          Course             @relation(fields: [course_id], references: [course_id])
+  course_id       String             @db.Uuid
+  enrollmentDate  DateTime           @default(now()) @map("enrollment_date")
+  status          String
+
+  progress        ProgressTracking[]
+}
+
+model ProgressTracking {
+  progress_id    String     @id @default(uuid()) @db.Uuid
+  enrollment     Enrollment @relation(fields: [enrollment_id], references: [enrollment_id])
+  enrollment_id  String     @db.Uuid
+  module_id      String
+  progress       Float
+  lastAccessed   DateTime   @map("last_accessed")
+  timeSpent      Int        @map("time_spent")
+}
+
+model Certificate {
+  certificate_id   String   @id @default(uuid()) @db.Uuid
+  user             User     @relation(fields: [user_id], references: [user_id])
+  user_id          String   @db.Uuid
+  course           Course   @relation(fields: [course_id], references: [course_id])
+  course_id        String   @db.Uuid
+  certificateUrl   String   @map("certificate_url")
+  issueDate        DateTime @default(now()) @map("issue_date")
+  uniqueId         String   @unique @map("unique_id")
+  verificationUrl  String   @map("verification_url")
+}
+
+model Payment {
+  payment_id     String   @id @default(uuid()) @db.Uuid
+  user           User     @relation(fields: [user_id], references: [user_id])
+  user_id        String   @db.Uuid
+  course         Course   @relation("CoursePayments", fields: [course_id], references: [course_id])
+  course_id      String   @db.Uuid
+  amount         Decimal
+  transactionId  String   @unique @map("transaction_id")
+  paymentStatus  String   @map("payment_status")
+  paymentDate    DateTime @default(now()) @map("payment_date")
+  method         String
+}
+
+model Notification {
+  notification_id String             @id @default(uuid()) @db.Uuid
+  user            User               @relation(fields: [user_id], references: [user_id])
+  user_id         String             @db.Uuid
+  type            NotificationType
+  message         String
+  status          String
+  createdAt       DateTime           @default(now()) @map("created_at")
+
+  logs            NotificationLog[]
+}
+
+model NotificationLog {
+  log_id          String        @id @default(uuid()) @db.Uuid
+  notification    Notification  @relation(fields: [notification_id], references: [notification_id])
+  notification_id String        @db.Uuid
+  deliveryStatus  String        @map("delivery_status")
+  deliveredAt     DateTime      @map("delivered_at")
+}
+
+model MediaRepository {
+  media_id     String     @id @default(uuid()) @db.Uuid
+  course       Course     @relation(fields: [course_id], references: [course_id])
+  course_id    String     @db.Uuid
+  media_type   MediaType
+  media_url    String
+  uploaded_at  DateTime   @default(now())
+}
+
+model Analytic {
+  analytic_id   String   @id @default(uuid()) @db.Uuid
+  course        Course   @relation(fields: [course_id], references: [course_id])
+  course_id     String   @db.Uuid
+  user          User     @relation("UserAnalytics", fields: [user_id], references: [user_id])
+  user_id       String   @db.Uuid
+  event_type    String
+  event_data    Json
+  recorded_at   DateTime @default(now())
+}

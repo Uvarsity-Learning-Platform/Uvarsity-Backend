@@ -1,0 +1,530 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+// User management with role-based access control
+model User {
+  id           String   @id @default(uuid()) // UUID for better performance than CUID
+  email        String   @unique // Primary identifier for login
+  name         String   @db.VarChar(255) // Full name of the user
+  phone        String?  @db.VarChar(20) // Optional phone number
+  passwordHash String   @map("password_hash") @db.VarChar(255) // Bcrypt hashed password
+  role         UserRole @default(STUDENT) // Role-based access control
+  avatarUrl    String?  @map("avatar_url") @db.VarChar(500) // Profile picture URL
+  isActive     Boolean  @default(true) @map("is_active") // Soft delete flag
+  emailVerified Boolean @default(false) @map("email_verified") // Email verification status
+  lastLoginAt DateTime? @map("last_login_at") // Track user activity
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relationships
+  coursesCreated    Course[]           @relation("CourseInstructor") // Courses created by instructor
+  enrollments       Enrollment[]       // Courses user is enrolled in
+  certificates      Certificate[]      // Certificates earned
+  payments          Payment[]          // Payment history
+  notifications     Notification[]     // User notifications
+  reviewsGiven      PeerReview[]       @relation("ReviewerUser") // Reviews given by user
+  reviewsReceived   ReviewAssignment[] @relation("SubmitterUser") // Reviews received
+  assignedReviews   ReviewAssignment[] @relation("ReviewerAssigned") // Reviews assigned to user
+  mediaUploads      Media[]           @relation("MediaUploader") // Media uploaded by instructor
+  analyticsEvents   Analytics[]        // User activity analytics
+
+  @@map("users")
+  @@index([email]) // Fast email lookups for authentication
+  @@index([role]) // Filter users by role
+  @@index([isActive]) // Filter active users
+}
+
+// Enum for user roles with clear hierarchy
+enum UserRole {
+  STUDENT    // Can enroll in courses
+  INSTRUCTOR // Can create and manage courses
+  ADMIN      // Full system access
+}
+
+// Course entity - main content container
+model Course {
+  id            String        @id @default(uuid())
+  title         String        @db.VarChar(255) // Course title
+  description   String        @db.Text // Detailed course description
+  category      String        @db.VarChar(100) // Course category for filtering
+  instructorId  String        @map("instructor_id") // Creator of the course
+  price         Decimal       @default(0) @db.Decimal(10, 2) // Course price
+  currency      String        @default("USD") @db.VarChar(3) // Currency code
+  status        CourseStatus  @default(DRAFT) // Publication status
+  difficulty    String?       @db.VarChar(50) // Beginner, Intermediate, Advanced
+  estimatedHours Int?         @map("estimated_hours") // Estimated completion time
+  thumbnailUrl  String?       @map("thumbnail_url") @db.VarChar(500) // Course thumbnail
+  isActive      Boolean       @default(true) @map("is_active") // Soft delete
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  // Relationships
+  instructor       User              @relation("CourseInstructor", fields: [instructorId], references: [id], onDelete: Cascade)
+  modules          Module[]          // Course modules/sections
+  enrollments      Enrollment[]      // Students enrolled
+  certificates     Certificate[]     // Certificates for completion
+  payments         Payment[]         // Payment records
+  coupons          Coupon[]         // Course-specific coupons
+  media            Media[]          // Course media files
+  analytics        Analytics[]      // Course analytics
+  reviewAssignments ReviewAssignment[] // Peer review assignments
+
+  @@map("courses")
+  @@index([instructorId]) // Fast instructor course lookup
+  @@index([category]) // Filter courses by category
+  @@index([status]) // Filter published courses
+  @@index([isActive]) // Filter active courses
+  @@index([createdAt]) // Sort by creation date
+}
+
+// Course publication status
+enum CourseStatus {
+  DRAFT     // Being created
+  PUBLISHED // Available for enrollment
+  ARCHIVED  // No longer available
+}
+
+// Module/Section - groups lessons together
+model Module {
+  id          String       @id @default(uuid())
+  title       String       @db.VarChar(255) // Module title
+  description String?      @db.Text // Optional module description
+  courseId    String       @map("course_id") // Parent course
+  order       Int          // Display order within course
+  status      ModuleStatus @default(DRAFT) // Publication status
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  // Relationships
+  course            Course             @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons           Lesson[]           // Lessons in this module
+  progressTracking  ProgressTracking[] // Student progress
+  reviewAssignments ReviewAssignment[] // Peer reviews for this module
+
+  @@map("modules")
+  @@index([courseId, order]) // Efficient module ordering
+  @@index([status]) // Filter published modules
+}
+
+// Module publication status
+enum ModuleStatus {
+  DRAFT
+  PUBLISHED
+}
+
+// Individual lesson content
+model Lesson {
+  id          String     @id @default(uuid())
+  title       String     @db.VarChar(255) // Lesson title
+  type        LessonType // Type of content
+  content     String?    @db.Text // Text content for articles
+  url         String?    @db.VarChar(500) // External URL or file path
+  moduleId    String     @map("module_id") // Parent module
+  order       Int        // Display order within module
+  duration    Int?       // Estimated duration in minutes
+  isRequired  Boolean    @default(true) @map("is_required") // Required for completion
+  status      LessonStatus @default(DRAFT) // Publication status
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  // Relationships
+  module           Module             @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  progressTracking ProgressTracking[] // Student progress on this lesson
+
+  @@map("lessons")
+  @@index([moduleId, order]) // Efficient lesson ordering
+  @@index([type]) // Filter by lesson type
+  @@index([status]) // Filter published lessons
+}
+
+// Types of lesson content
+enum LessonType {
+  VIDEO        // Video content
+  ARTICLE      // Text-based article
+  PDF          // PDF document
+  QUIZ         // Assessment/quiz
+  LIVE_SESSION // Live webinar/session
+  CODE_SANDBOX // Interactive coding environment
+  ASSIGNMENT   // Student assignment
+}
+
+// Lesson publication status
+enum LessonStatus {
+  DRAFT
+  PUBLISHED
+}
+
+// Student enrollment in courses
+model Enrollment {
+  id              String           @id @default(uuid())
+  userId          String           @map("user_id") // Enrolled student
+  courseId        String           @map("course_id") // Enrolled course
+  paymentId       String?          @map("payment_id") // Associated payment
+  enrollmentDate  DateTime         @default(now()) @map("enrollment_date") // When enrolled
+  status          EnrollmentStatus @default(IN_PROGRESS) // Current status
+  progress        Decimal          @default(0) @db.Decimal(5, 2) // Overall progress percentage
+  currentLessonId String?          @map("current_lesson_id") // Last accessed lesson
+  completedAt     DateTime?        @map("completed_at") // When course was completed
+  certificateId   String?          @map("certificate_id") // Generated certificate
+  
+  // Relationships
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course           Course             @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  payment          Payment?           @relation(fields: [paymentId], references: [id])
+  progressTracking ProgressTracking[] // Detailed progress per lesson
+
+  @@map("enrollments")
+  @@unique([userId, courseId]) // Prevent duplicate enrollments
+  @@index([userId]) // User's enrollments
+  @@index([courseId]) // Course enrollment count
+  @@index([status]) // Filter by enrollment status
+  @@index([enrollmentDate]) // Sort by enrollment date
+}
+
+// Enrollment status options
+enum EnrollmentStatus {
+  IN_PROGRESS // Currently taking course
+  COMPLETED   // Successfully completed
+  DROPPED     // Student dropped out
+  SUSPENDED   // Temporarily suspended
+}
+
+// Detailed progress tracking per lesson
+model ProgressTracking {
+  id           String   @id @default(uuid())
+  enrollmentId String   @map("enrollment_id") // Parent enrollment
+  moduleId     String   @map("module_id") // Module being tracked
+  lessonId     String   @map("lesson_id") // Specific lesson
+  progress     Decimal  @default(0) @db.Decimal(5, 2) // Progress percentage (0-100)
+  isCompleted  Boolean  @default(false) @map("is_completed") // Completion flag
+  lastAccessed DateTime @default(now()) @map("last_accessed") // Last access time
+  timeSpent    Int      @default(0) @map("time_spent") // Time spent in seconds
+  attempts     Int      @default(0) // Number of attempts (for quizzes)
+  score        Decimal? @db.Decimal(5, 2) // Score achieved (for assessments)
+
+  // Relationships
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  module     Module     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  lesson     Lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@map("progress_tracking")
+  @@unique([enrollmentId, lessonId]) // One progress record per lesson per enrollment
+  @@index([enrollmentId]) // User progress queries
+  @@index([lessonId]) // Lesson completion statistics
+  @@index([lastAccessed]) // Recent activity tracking
+}
+
+// Course completion certificates
+model Certificate {
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id") // Certificate recipient
+  courseId       String   @map("course_id") // Completed course
+  certificateUrl String   @map("certificate_url") @db.VarChar(500) // Generated certificate file
+  uniqueId       String   @unique @map("unique_id") // Public verification ID
+  verificationUrl String  @map("verification_url") @db.VarChar(500) // Public verification link
+  issueDate      DateTime @default(now()) @map("issue_date") // When issued
+  isRevoked      Boolean  @default(false) @map("is_revoked") // Revocation status
+  revokedAt      DateTime? @map("revoked_at") // When revoked
+  metadata       Json?    // Additional certificate data
+
+  // Relationships
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("certificates")
+  @@unique([userId, courseId]) // One certificate per user per course
+  @@index([uniqueId]) // Fast verification lookups
+  @@index([issueDate]) // Sort certificates by date
+  @@index([isRevoked]) // Filter active certificates
+}
+
+// Payment processing and records
+model Payment {
+  id                String        @id @default(uuid())
+  userId            String        @map("user_id") // Paying user
+  courseId          String        @map("course_id") // Course being purchased
+  amount            Decimal       @db.Decimal(10, 2) // Final amount paid
+  originalAmount    Decimal       @map("original_amount") @db.Decimal(10, 2) // Before discounts
+  discountAmount    Decimal       @default(0) @map("discount_amount") @db.Decimal(10, 2) // Discount applied
+  currency          String        @default("USD") @db.VarChar(3) // Payment currency
+  transactionId     String        @unique @map("transaction_id") // External transaction ID
+  status            PaymentStatus @default(PENDING) // Payment status
+  method            PaymentMethod // Payment method used
+  paymentDate       DateTime      @default(now()) @map("payment_date") // When payment was made
+  processedAt       DateTime?     @map("processed_at") // When payment was processed
+  refundedAt        DateTime?     @map("refunded_at") // When refunded
+  couponCode        String?       @map("coupon_code") @db.VarChar(50) // Applied coupon
+  promoCode         String?       @map("promo_code") @db.VarChar(50) // Applied promo code
+  paymentGatewayRef String?       @map("payment_gateway_ref") @db.VarChar(255) // Gateway reference
+  failureReason     String?       @map("failure_reason") @db.Text // Failure details
+  metadata          Json?         // Additional payment data
+
+  // Relationships
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course      Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  enrollments Enrollment[] // Associated enrollments
+
+  @@map("payments")
+  @@index([userId]) // User payment history
+  @@index([courseId]) // Course revenue tracking
+  @@index([status]) // Filter by payment status
+  @@index([paymentDate]) // Sort by payment date
+  @@index([transactionId]) // Fast transaction lookups
+}
+
+// Payment status options
+enum PaymentStatus {
+  PENDING    // Payment initiated
+  COMPLETED  // Successfully processed
+  FAILED     // Payment failed
+  REFUNDED   // Payment refunded
+  CANCELLED  // Payment cancelled
+}
+
+// Payment method options
+enum PaymentMethod {
+  CREDIT_CARD // Credit/debit card
+  PAYSTACK    // Paystack payment
+  BANK_TRANSFER // Direct bank transfer
+  MOBILE_MONEY // Mobile money payment
+  CRYPTO      // Cryptocurrency payment
+}
+
+// Discount coupons and promotional codes
+model Coupon {
+  id                 String      @id @default(uuid())
+  code               String      @unique @db.VarChar(50) // Coupon code
+  description        String?     @db.VarChar(255) // Coupon description
+  discountType       DiscountType // Type of discount
+  discountValue      Decimal     @map("discount_value") @db.Decimal(10, 2) // Discount amount/percentage
+  minimumAmount      Decimal?    @map("minimum_amount") @db.Decimal(10, 2) // Minimum purchase amount
+  maximumDiscount    Decimal?    @map("maximum_discount") @db.Decimal(10, 2) // Maximum discount cap
+  usageLimit         Int?        @map("usage_limit") // Maximum number of uses
+  usageCount         Int         @default(0) @map("usage_count") // Current usage count
+  validFrom          DateTime    @map("valid_from") // When coupon becomes valid
+  validTo            DateTime    @map("valid_to") // When coupon expires
+  isActive           Boolean     @default(true) @map("is_active") // Active status
+  courseId           String?     @map("course_id") // Course-specific coupon
+  applicableToAll    Boolean     @default(false) @map("applicable_to_all") // Applies to all courses
+  createdAt          DateTime    @default(now()) @map("created_at")
+  updatedAt          DateTime    @updatedAt @map("updated_at")
+
+  // Relationships
+  course Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("coupons")
+  @@index([code]) // Fast coupon code lookups
+  @@index([validFrom, validTo]) // Filter valid coupons
+  @@index([isActive]) // Filter active coupons
+  @@index([courseId]) // Course-specific coupons
+}
+
+// Discount type options
+enum DiscountType {
+  PERCENTAGE // Percentage discount (e.g., 20%)
+  FIXED      // Fixed amount discount (e.g., $10)
+}
+
+// User notification system
+model Notification {
+  id        String             @id @default(())
+  userId    String             @map("user_id") // Notification recipient
+  type      NotificationType   // Type of notification
+  title     String             @db.VarChar(255) // Notification title
+  message   String             @db.Text // Notification content
+  data      Json?              // Additional notification data
+  status    NotificationStatus @default(PENDING) // Delivery status
+  readAt    DateTime?          @map("read_at") // When user read notification
+  createdAt DateTime           @default(now()) @map("created_at")
+
+  // Relationships
+  user User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logs NotificationLog[]  // Delivery logs
+
+  @@map("notifications")
+  @@index([userId, readAt]) // User's unread notifications
+  @@index([type]) // Filter by notification type
+  @@index([status]) // Filter by delivery status
+  @@index([createdAt]) // Sort by creation date
+}
+
+// Notification type options
+enum NotificationType {
+  EMAIL     // Email notification
+  IN_APP    // In-app notification
+  PUSH      // Push notification
+  SMS       // SMS notification
+}
+
+// Notification status options
+enum NotificationStatus {
+  PENDING   // Waiting to be sent
+  SENT      // Successfully sent
+  FAILED    // Failed to send
+  READ      // Read by user
+}
+
+// Notification delivery logs
+model NotificationLog {
+  id             String   @id @default(cuid())
+  notificationId String   @map("notification_id") // Parent notification
+  deliveryStatus String   @map("delivery_status") @db.VarChar(50) // Delivery result
+  errorMessage   String?  @map("error_message") @db.Text // Error details if failed
+  deliveredAt    DateTime @default(now()) @map("delivered_at") // When delivery was attempted
+  metadata       Json?    // Additional delivery data
+
+  // Relationships
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@map("notification_logs")
+  @@index([notificationId]) // Logs for specific notification
+  @@index([deliveryStatus]) // Filter by delivery status
+  @@index([deliveredAt]) // Sort by delivery time
+}
+
+// Media file repository
+model Media {
+  id           String    @id @default(cuid())
+  courseId     String    @map("course_id") // Associated course
+  uploaderId   String    @map("uploader_id") // User who uploaded
+  fileName     String    @map("file_name") @db.VarChar(255) // Original filename
+  fileSize     BigInt    @map("file_size") // File size in bytes
+  mimeType     String    @map("mime_type") @db.VarChar(100) // File MIME type
+  mediaType    MediaType @map("media_type") // Media category
+  url          String    @db.VarChar(500) // File storage URL
+  thumbnailUrl String?   @map("thumbnail_url") @db.VarChar(500) // Thumbnail URL
+  duration     Int?      // Duration in seconds (for video/audio)
+  resolution   String?   @db.VarChar(20) // Video resolution (e.g., "1920x1080")
+  isProcessed  Boolean   @default(false) @map("is_processed") // Processing status
+  uploadIndex  Int       @map("upload_index") // Sequential upload order
+  uploadedAt   DateTime  @default(now()) @map("uploaded_at")
+
+  // Relationships
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  uploader User   @relation("MediaUploader", fields: [uploaderId], references: [id], onDelete: Cascade)
+
+  @@map("media")
+  @@index([courseId, uploadIndex]) // Ordered media retrieval
+  @@index([uploaderId]) // User's uploaded media
+  @@index([mediaType]) // Filter by media type
+  @@index([uploadedAt]) // Sort by upload date
+}
+
+// Media type categories
+enum MediaType {
+  VIDEO     // Video files
+  IMAGE     // Image files
+  DOCUMENT  // Document files (PDF, Word, etc.)
+  AUDIO     // Audio files
+  ARCHIVE   // Compressed files
+}
+
+// Analytics and event tracking
+model Analytics {
+  id         String   @id @default(cuid())
+  userId     String?  @map("user_id") // Associated user (optional for anonymous events)
+  courseId   String?  @map("course_id") // Associated course (optional)
+  eventType  String   @map("event_type") @db.VarChar(100) // Type of event
+  eventData  Json     @map("event_data") // Event-specific data
+  sessionId  String?  @map("session_id") @db.VarChar(100) // User session ID
+  ipAddress  String?  @map("ip_address") @db.VarChar(45) // User IP address
+  userAgent  String?  @map("user_agent") @db.Text // Browser user agent
+  recordedAt DateTime @default(now()) @map("recorded_at") // When event occurred
+
+  // Relationships
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  course Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
+
+  @@map("analytics")
+  @@index([userId]) // User activity analysis
+  @@index([courseId]) // Course analytics
+  @@index([eventType]) // Filter by event type
+  @@index([recordedAt]) // Time-based analytics
+  @@index([sessionId]) // Session-based analysis
+}
+
+// Pre-generated analytics reports
+model AnalyticsReport {
+  id          String   @id @default(cuid())
+  type        String   @db.VarChar(100) // Report type
+  parameters  Json     // Report parameters
+  reportUrl   String   @map("report_url") @db.VarChar(500) // Generated report file URL
+  status      String   @db.VarChar(50) // Generation status
+  generatedAt DateTime @default(now()) @map("generated_at") // When report was generated
+  expiresAt   DateTime? @map("expires_at") // When report expires
+
+  @@map("analytics_reports")
+  @@index([type]) // Filter by report type
+  @@index([generatedAt]) // Sort by generation date
+  @@index([status]) // Filter by generation status
+}
+
+// Peer review system
+model PeerReview {
+  id           String   @id @default(cuid())
+  assignmentId String   @map("assignment_id") // Review assignment
+  reviewerId   String   @map("reviewer_id") // User giving review
+  feedback     String   @db.Text // Review feedback
+  rating       Decimal  @db.Decimal(3, 2) // Numeric rating (e.g., 4.5)
+  isAnonymous  Boolean  @default(false) @map("is_anonymous") // Anonymous review flag
+  submittedAt  DateTime @default(now()) @map("submitted_at") // When review was submitted
+
+  // Relationships
+  assignment ReviewAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  reviewer   User             @relation("ReviewerUser", fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  @@map("peer_reviews")
+  @@index([assignmentId]) // Reviews for assignment
+  @@index([reviewerId]) // Reviews by user
+  @@index([submittedAt]) // Sort by submission date
+}
+
+// Peer review assignments
+model ReviewAssignment {
+  id          String                @id @default(cuid())
+  courseId    String                @map("course_id") // Course context
+  moduleId    String                @map("module_id") // Module context
+  submitterId String                @map("submitter_id") // User whose work is reviewed
+  reviewerId  String                @map("reviewer_id") // User assigned to review
+  title       String                @db.VarChar(255) // Assignment title
+  description String?               @db.Text // Assignment description
+  dueDate     DateTime?             @map("due_date") // Review deadline
+  status      ReviewAssignmentStatus @default(PENDING) // Assignment status
+  assignedAt  DateTime              @default(now()) @map("assigned_at") // When assigned
+  completedAt DateTime?             @map("completed_at") // When completed
+
+  // Relationships
+  course    Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  module    Module       @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  submitter User         @relation("SubmitterUser", fields: [submitterId], references: [id], onDelete: Cascade)
+  reviewer  User         @relation("ReviewerAssigned", fields: [reviewerId], references: [id], onDelete: Cascade)
+  reviews   PeerReview[] // Reviews submitted for this assignment
+
+  @@map("review_assignments")
+  @@index([courseId]) // Course assignments
+  @@index([submitterId]) // User's submissions
+  @@index([reviewerId]) // User's review tasks
+  @@index([status]) // Filter by status
+  @@index([dueDate]) // Sort by due date
+}
+
+// Review assignment status options
+enum ReviewAssignmentStatus {
+  PENDING    // Waiting for review
+  IN_PROGRESS // Review in progress
+  COMPLETED  // Review completed
+  OVERDUE    // Past due date
+  CANCELLED  // Assignment cancelled
+}
