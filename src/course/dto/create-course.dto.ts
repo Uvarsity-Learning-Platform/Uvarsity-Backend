@@ -11,8 +11,7 @@ import {
   IsBoolean
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { CourseLevel } from '../../../generated/prisma';
-
+import { CourseLevel } from '@prisma/client';
 export class CreateCourseDto {
   @IsString()
   @IsNotEmpty({ message: 'Course title is required' })

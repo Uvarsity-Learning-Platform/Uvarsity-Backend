@@ -7,7 +7,7 @@ import {
 import { DatabaseService } from '../../database/database.service';
 import { MediaProcessingService } from '../../cloudinary/services/media-processing/media-processing.service';
 import { CloudinaryService } from '../../cloudinary/services/cloudinary/cloudinary.service';
-import { MediaType } from '../../../generated/prisma';
+import { MediaType } from '@prisma/client';
 
 /**
  * MediaService - Business logic layer for media management

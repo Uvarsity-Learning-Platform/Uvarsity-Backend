@@ -1,8 +1,7 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
-import { MediaType } from '../../../../generated/prisma';
-import * as sharp from 'sharp';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';import * as sharp from 'sharp';
 import { Express } from 'express';
+import { MediaType } from '@prisma/client';
 
 
 /**
