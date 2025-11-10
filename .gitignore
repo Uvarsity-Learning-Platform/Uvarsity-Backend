@@ -85,4 +85,5 @@ pids/
 *.sqlite3
 
 # Prisma
-prisma/migrations/
+prisma/migrations/.env
+.history
